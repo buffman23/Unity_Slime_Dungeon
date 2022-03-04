@@ -14,7 +14,6 @@ unity objects:
 
 git:
   - atomic commits, a.k.a don't lump unrelated changes into one commit
-  - 'git status' to see what files changed
   - 'git add [filename]' to add individial files
 
 c# file header:
