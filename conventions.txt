@@ -1,0 +1,33 @@
+filenames/assets: lower_case_names
+
+code (https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions):
+  - classes: PascalCaseNames (first letter capital)
+  - methods: PascalCaseNames
+  - variables: camelCaseNames (first letter lower)
+  - private variables: _startWithUnderscore
+  - static variables: _startWithSAndUnderscore
+  - constant variables: ALL_CAPITAL_LETTERS
+  - comments: Start sentences with a capital and end with a period.
+
+unity objects:
+  - PascalCaseNames
+
+git:
+  - atomic commits, a.k.a don't lump unrelated changes into one commit
+  - 'git add [filename]' to add individial files
+
+c# file header:
+/*
+ * Author: [name]
+ * Class: CS-583 Price, Group 13
+ * Desc: [short descroption]
+ * 
+ */
+
+method header:
+/*
+ * Author: [name]
+ * Desc: [short descroption]
+ * [Params: desc]
+ * [Returns: desc]
+ */
