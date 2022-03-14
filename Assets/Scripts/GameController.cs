@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
     private Room[,] _roomGrid;
     private Vector2Int _gridDimension = new Vector2Int(50, 50);
     private Vector2Int _gridStart = new Vector2Int(25, 25);
-    private Vector2 _tileSize = new Vector2(30, 30);
+    private Vector2 _tileSize = new Vector2(60, 60);
     private float _roomHeight = 5;
     int room_count = 15;
 
@@ -117,8 +117,8 @@ public class GameController : MonoBehaviour
      */
     private Vector2 generateRoomSize()
     {
-        float x = 4 * Mathf.Sqrt(UnityEngine.Random.Range(0, 25)) + 5;
-        float y = 4 * Mathf.Sqrt(UnityEngine.Random.Range(0, 25)) + 5;
+        float x = 4 * Mathf.Sqrt(UnityEngine.Random.Range(0, 100)) + 5;
+        float y = 4 * Mathf.Sqrt(UnityEngine.Random.Range(0, 100)) + 5;
         return new Vector2(x, y);
     }
 }

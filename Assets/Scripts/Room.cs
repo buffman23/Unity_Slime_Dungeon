@@ -80,10 +80,10 @@ public class Room : MonoBehaviour
         }
 
         // Temportary testing code
-        MakeDoorway(_walls[NORTH_WALL], .25f);
-        MakeDoorway(_walls[EAST_WALL], .5f);
-        MakeDoorway(_walls[SOUTH_WALL], .1f);
-        MakeDoorway(_walls[WEST_WALL], .67f);
+        MakeDoorway(_walls[NORTH_WALL], Random.Range(0f, 1f));
+        MakeDoorway(_walls[EAST_WALL], Random.Range(0f, 1f));
+        MakeDoorway(_walls[SOUTH_WALL], Random.Range(0f, 1f));
+        MakeDoorway(_walls[WEST_WALL], Random.Range(0f, 1f));
     }
 
     // Update is called once per frame
