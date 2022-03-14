@@ -18,7 +18,7 @@ git:
 
 c# file header:
 /*
- * Author: [name]
+ * Authors: [name]
  * Class: CS-583 Price, Group 13
  * Desc: [short descroption]
  * 
@@ -26,7 +26,7 @@ c# file header:
 
 method header:
 /*
- * Author: [name]
+ * Authors: [name]
  * Desc: [short descroption]
  * [Params: desc]
  * [Returns: desc]

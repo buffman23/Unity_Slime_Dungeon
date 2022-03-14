@@ -1,0 +1,5 @@
+YoutTube Tutorials:
+  - colloider and trigger tutorial: https://www.youtube.com/watch?v=6C4KfuW2q8Y
+  - basic materials tutorial: https://www.youtube.com/watch?v=V72pMtqMgFk
+  - 3D tilemap tutorial: https://www.youtube.com/watch?v=ulFc6p3hQzQ
+  - player movement: https://www.youtube.com/watch?v=_QajrabyTJc&t=848s
