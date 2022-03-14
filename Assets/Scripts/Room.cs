@@ -14,6 +14,10 @@ public class Room : MonoBehaviour
 
     public Vector3 size;
 
+    public bool deadEnd = false;
+
+    public Vector2Int gridPosition = Vector2Int.zero;
+
     private GameObject[] _walls = new GameObject[4];
 
     private GameObject _floor;
@@ -28,11 +32,8 @@ public class Room : MonoBehaviour
 
     private Vector2 _doorwayDimensions = new Vector2(3f, 4f);
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-
         _roomMaterial = Resources.Load<Material>("materials/Room");
 
         _floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -74,22 +75,53 @@ public class Room : MonoBehaviour
         wall.name = transform.gameObject.name + "_WestWall";
         _walls[WEST_WALL] = wall;
 
-        foreach(GameObject w in _walls){
+        foreach (GameObject w in _walls)
+        {
             w.GetComponent<Renderer>().material = _roomMaterial;
             w.layer = LayerMask.NameToLayer("Ground");
         }
 
         // Temportary testing code
-        MakeDoorway(_walls[NORTH_WALL], Random.Range(0f, 1f));
-        MakeDoorway(_walls[EAST_WALL], Random.Range(0f, 1f));
-        MakeDoorway(_walls[SOUTH_WALL], Random.Range(0f, 1f));
-        MakeDoorway(_walls[WEST_WALL], Random.Range(0f, 1f));
+        //MakeDoorway(_walls[NORTH_WALL], Random.Range(0f, 1f));
+        //MakeDoorway(_walls[EAST_WALL], Random.Range(0f, 1f));
+        //MakeDoorway(_walls[SOUTH_WALL], Random.Range(0f, 1f));
+        //MakeDoorway(_walls[WEST_WALL], Random.Range(0f, 1f));
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+
+        
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    public void MakeDoorway(Vector2 side, float position)
+    {
+        int wall_const = NORTH_WALL;
+
+        if (side.x == 1)
+        {
+            wall_const = NORTH_WALL;
+        }
+        else if (side.x == -1)
+        {
+            wall_const = SOUTH_WALL;
+        }
+        else if (side.y == 1)
+        {
+            wall_const = WEST_WALL;
+        }
+        else if (side.y == -1)
+        {
+            wall_const = EAST_WALL;
+        }
+
+        MakeDoorway(_walls[wall_const], position);
     }
 
     /*
@@ -101,6 +133,7 @@ public class Room : MonoBehaviour
     private void MakeDoorway(GameObject wall, float position)
     {
         GameObject top = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        top.layer = LayerMask.NameToLayer("Ground");
         top.transform.localScale = new Vector3(_wallThickness, wall.transform.localScale.y - _doorwayDimensions.y, wall.transform.localScale.z);
         top.transform.rotation = wall.transform.rotation;
         top.transform.SetParent(wall.transform);

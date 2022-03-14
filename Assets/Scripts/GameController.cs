@@ -16,21 +16,26 @@ public class GameController : MonoBehaviour
     public Vector2 spawnPoint;
 
     private List<Room> _rooms;
+    private List<Room> _nonDeadEnds;
     private Room[,] _roomGrid;
-    private Vector2Int _gridDimension = new Vector2Int(50, 50);
-    private Vector2Int _gridStart = new Vector2Int(25, 25);
-    private Vector2 _tileSize = new Vector2(60, 60);
-    private float _roomHeight = 5;
-    int room_count = 15;
+    private static Vector2Int _gridDimension = new Vector2Int(100, 100);
+    private static Vector2Int _gridStart = new Vector2Int(_gridDimension.x/2, _gridDimension.y / 2);
+    private static Vector2 _tileSize = new Vector2(46, 46);
+    private static float _roomHeight = 5;
+    int room_count = 25;
+
+    private Vector2Int gridPositionDelta = Vector2Int.zero;
 
     // Start is called before the first frame update
     void Start()
     {
         _roomGrid = new Room[_gridDimension.x, _gridDimension.y];
+        _rooms = new List<Room>(room_count);
+        _nonDeadEnds = new List<Room>(room_count);
 
         Vector3 roomPosition = Vector3.zero;
         Vector2Int gridPosition = new Vector2Int(_gridStart.x, _gridStart.y);
-        Room prevRoom;
+        Room prevRoom = null;
 
         Vector2 spawnPointOffset = new Vector2(gridPosition.x * _tileSize.x, gridPosition.y * _tileSize.y);
 
@@ -38,18 +43,57 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < room_count; ++i)
         {
             roomPosition = new Vector3(gridPosition.x * _tileSize.x - spawnPointOffset.x, 0f, gridPosition.y * _tileSize.y - spawnPointOffset.y);
-            Room room = Instantiate(prefab, roomPosition, Quaternion.identity);
-
             Vector2 room2dDim = generateRoomSize();
-            room.size = new Vector3(room2dDim.x, _roomHeight, room2dDim.y);
+            prefab.size = new Vector3(room2dDim.x, _roomHeight, room2dDim.y);
+
+            Room room = Instantiate(prefab, roomPosition, Quaternion.identity);
+            room.name = "Room_" + i;
+            room.gridPosition.x = gridPosition.x;
+            room.gridPosition.y = gridPosition.y;
+
+            _rooms.Add(room);
+            _nonDeadEnds.Add(room);
+
+            // remember last room to connect with hallway.
+            if (prevRoom != null)
+            {
+                room.MakeDoorway(-gridPositionDelta, .5f);
+            }
+
+            // Last room wont have another room to make so break early
+            if (i == room_count - 1)
+            {
+                break;
+            }
 
             _roomGrid[gridPosition.x, gridPosition.y] = room;
 
-            List<Vector2Int> validNextTiles = validNeighborTiles(gridPosition);
+            List<Vector2Int> validNextTiles = null;
 
-            gridPosition = validNextTiles[(int)UnityEngine.Random.Range(0, validNextTiles.Count)];
+            for(int j = 1; true; ++j)
+            {
+                validNextTiles = validNeighborTiles(gridPosition);
 
-            // remember last room to connect with hallway.
+                if (validNextTiles.Count == 0)
+                {
+                    room.deadEnd = true;
+                    _rooms.Remove(room);
+                    room = _nonDeadEnds[_nonDeadEnds.Count - j];
+                    gridPosition.x = room.gridPosition.x;
+                    gridPosition.y = room.gridPosition.y;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            gridPositionDelta = validNextTiles[(int)UnityEngine.Random.Range(0, validNextTiles.Count)];
+            gridPosition += gridPositionDelta;
+
+            if(i != room_count - 1)
+                room.MakeDoorway(gridPositionDelta, .5f);
+
             prevRoom = room;
         }
     }
@@ -75,7 +119,7 @@ public class GameController : MonoBehaviour
             if (_roomGrid[tilePos.x + 1, tilePos.y] == null)
             {
 
-                validTiles.Add(new Vector2Int(tilePos.x + 1, tilePos.y));
+                validTiles.Add(new Vector2Int(1, 0));
             }
         }
         catch (IndexOutOfRangeException){ }
@@ -84,7 +128,7 @@ public class GameController : MonoBehaviour
         {
             if (_roomGrid[tilePos.x - 1, tilePos.y] == null)
             {
-                validTiles.Add(new Vector2Int(tilePos.x - 1, tilePos.y));
+                validTiles.Add(new Vector2Int(-1, 0));
             }
         }
         catch (IndexOutOfRangeException){ }
@@ -93,7 +137,7 @@ public class GameController : MonoBehaviour
         {
             if (_roomGrid[tilePos.x, tilePos.y + 1] == null)
             {
-                validTiles.Add(new Vector2Int(tilePos.x, tilePos.y + 1));
+                validTiles.Add(new Vector2Int(0, 1));
             }
         }
         catch (IndexOutOfRangeException){ }
@@ -102,7 +146,7 @@ public class GameController : MonoBehaviour
         {
             if (_roomGrid[tilePos.x, tilePos.y - 1] == null)
             {
-                validTiles.Add(new Vector2Int(tilePos.x, tilePos.y - 1));
+                validTiles.Add(new Vector2Int(0, -1));
             }
         }
         catch (IndexOutOfRangeException){ }
