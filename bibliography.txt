@@ -3,3 +3,8 @@ YoutTube Tutorials:
   - basic materials tutorial: https://www.youtube.com/watch?v=V72pMtqMgFk
   - 3D tilemap tutorial: https://www.youtube.com/watch?v=ulFc6p3hQzQ
   - player movement: https://www.youtube.com/watch?v=_QajrabyTJc&t=848s
+  - blender rigify: https://www.youtube.com/watch?v=DS885Sk1gSs
+  - animator setup: https://www.youtube.com/watch?v=vApG8aYD5aI
+
+Animations:
+ - https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271
