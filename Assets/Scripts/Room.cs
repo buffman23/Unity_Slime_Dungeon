@@ -132,7 +132,9 @@ public class Room : MonoBehaviour
             }
         }
 
-        if(_xLargeSpawnGrid.GetLength(0) != 0 && _xLargeSpawnGrid.GetLength(1) != 0)
+        _drawGridObjects = new List<GameObject>((int)(_largeSpawnGrid.GetLength(1)) * _largeSpawnGrid.GetLength(1));
+
+        if (_xLargeSpawnGrid.GetLength(0) != 0 && _xLargeSpawnGrid.GetLength(1) != 0)
             generateTileNums(_xLargeSpawnGrid, _largeSpawnGrid, xLargeSpawnOptions, XLARGE_GRID_SIZE/LARGE_GRID_SIZE);
         generateTileNums(_largeSpawnGrid, null, largeSpawnOptions, LARGE_GRID_SIZE / SMALL_GRID_SIZE);
         generateTileNums(_smallSpawnGrid, null, smallSpawnOptions, 1);
@@ -452,27 +454,20 @@ public class Room : MonoBehaviour
 
     public void SetGridVisible(bool b)
     {
-        if(b)
+        foreach (GameObject go in _drawGridObjects)
         {
-            _drawGridObjects = new List<GameObject>((int)(_largeSpawnGrid.GetLength(1)) * _largeSpawnGrid.GetLength(1));
+            Destroy(go);
+        }
 
+        _drawGridObjects.Clear();
+
+        if (b)
+        {
             _drawGridObjects.AddRange(DrawFloorGrid(_xLargeSpawnGrid, XLARGE_GRID_SIZE, .01f, _xLargeTileMaterial));
             _drawGridObjects.AddRange(DrawFloorGrid(_largeSpawnGrid, LARGE_GRID_SIZE, .02f, _largeTileMaterial));
             _drawGridObjects.AddRange(DrawFloorGrid(_smallSpawnGrid, SMALL_GRID_SIZE, .03f, _smallTileMaterial));
         }
-        else
-        {
-            if (_drawGridObjects == null)
-                return;
 
-            foreach(GameObject go in _drawGridObjects)
-            {
-                Destroy(go);
-            }
-
-            _drawGridObjects.Clear();
-
-        }
     }
 
     private List<GameObject> DrawFloorGrid(int[,] grid, float tileSize, float height, Material mat)
