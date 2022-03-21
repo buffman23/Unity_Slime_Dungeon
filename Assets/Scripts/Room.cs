@@ -396,9 +396,6 @@ public class Room : MonoBehaviour
                     if (rand < so.probability)
                     {
                         grid[i, j] = so.index;
-                    } else
-                    {
-                        Debug.Log("unlucky");
                     }
                 }
             }
