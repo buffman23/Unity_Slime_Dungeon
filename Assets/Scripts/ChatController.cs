@@ -126,12 +126,13 @@ public class ChatController : MonoBehaviour
                 write("cube [size] - spawns cube in front of player");
                 write("ball [size] - spawns ball in frotn of player");
                 write("del - delete object being looked at");
-                write("ramp [deg incline] [len] - on args will make ramp to cursor");
+                write("ramp [deg incline] [len] - no args will make ramp to cursor");
                 write("speed [walkspeed]/reset - change player movement speed");
                 write("jump [jump height]/reset - change player jump height");
                 write("chat stay/fade - makes chat window stay or fade after closed");
                 write("cam [offset] - offset camera to get 3rd person view. 0 to go back to 1st person.");
                 write("fly on/off - toggles flying");
+                write("tiles on/off - toggles room spawn tile preview");
                 break;
 
             case "cube":
