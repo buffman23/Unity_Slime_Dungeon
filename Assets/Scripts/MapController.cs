@@ -128,8 +128,8 @@ public class MapController : MonoBehaviour
         Room.xLargeSpawnOptions = new List<SpawnOption>();
 
         SpawnOption sfoo = new SpawnOption(null, .01f, SpawnOption.ANY);
-        SpawnOption lfoo = new SpawnOption(null, .1f, SpawnOption.ANY);
-        SpawnOption lfoo2 = new SpawnOption(null, 2f, SpawnOption.CONRNER);
+        SpawnOption lfoo = new SpawnOption(null, .2f, SpawnOption.ANY);
+        SpawnOption lfoo2 = new SpawnOption(null, .2f, SpawnOption.CONRNER);
         SpawnOption xfoo = new SpawnOption(null, .1f, SpawnOption.ANY);
 
         Room.smallSpawnOptions.Add(sfoo);
