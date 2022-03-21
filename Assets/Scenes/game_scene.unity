@@ -211,7 +211,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 110406150}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -812,6 +812,7 @@ MonoBehaviour:
   walkSpeed: 4
   runSpeed: 7
   mouseSensitivity: 400
+  fly: 0
   groudCheck: {fileID: 1350807962}
   groundDistance: 0.3
   groundMask:
@@ -1107,7 +1108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df3799f69f6dcc4409a3583096cb5ce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 2953108286114526319, guid: 2f0f25552625d514aafab78cac065edb, type: 3}
   spawnPoint: {x: 0, y: 0}
   doorwayDimensions: {x: 3, y: 4}
 --- !u!4 &913364436
@@ -1192,7 +1192,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 0033d5276a95e6d4097c4b9f143bd430, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

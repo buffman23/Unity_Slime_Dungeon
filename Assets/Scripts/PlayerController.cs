@@ -80,7 +80,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("velocity.y: "+_velocity.y);
         _isGrounded = Physics.CheckSphere(groudCheck.position, groundDistance, groundMask);
 
         bool braceLand = Physics.CheckSphere(groudCheck.position, _braceLandDistance, groundMask);
@@ -145,7 +144,6 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.Space))
             {
-                Debug.Log("space bar");
                 _velocity.y = 7;
             }
             else if (Input.GetKey(KeyCode.LeftControl))

@@ -46,3 +46,4 @@ MonoBehaviour:
   size: {x: 39.871193, y: 5, z: 38.226494}
   deadEnd: 0
   gridPosition: {x: 0, y: 0}
+  doorwayDimensions: {x: 3, y: 4}

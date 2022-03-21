@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * Authors: Ryan Coughlin
+ * Class: CS-583 Price, Group 13
+ * Desc: This class is a hallway connecting two rooms
+ * 
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

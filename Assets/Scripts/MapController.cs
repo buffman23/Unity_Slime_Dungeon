@@ -1,7 +1,7 @@
-/*_roomPrefab
+/*
  * Authors: Ryan Coughlin
  * Class: CS-583 Price, Group 13
- * Desc: Controls Game.
+ * Desc: This class controls map generation
  * 
  */
 
@@ -34,6 +34,8 @@ public class MapController : MonoBehaviour
     void Start()
     {
         initReferences();
+
+        initRoomSpawnOptions();
 
         _roomPrefab.doorwayDimensions = this.doorwayDimensions;
 
@@ -110,12 +112,45 @@ public class MapController : MonoBehaviour
 
             prevRoom = room;
         }
+
+        setRoomGridsVisible(true);
     }
 
     private void initReferences()
     {
         _roomPrefab = Resources.Load<Room>("Prefabs/Room");
         _hallwayPrefab = Resources.Load<Hallway>("Prefabs/Hallway");
+    }
+    private void initRoomSpawnOptions()
+    {
+        Room.smallSpawnOptions = new List<SpawnOption>();
+        Room.largeSpawnOptions = new List<SpawnOption>();
+        Room.xLargeSpawnOptions = new List<SpawnOption>();
+
+        SpawnOption sfoo = new SpawnOption(null, .01f, SpawnOption.ANY);
+        SpawnOption lfoo = new SpawnOption(null, .1f, SpawnOption.ANY);
+        SpawnOption lfoo2 = new SpawnOption(null, 2f, SpawnOption.CONRNER);
+        SpawnOption xfoo = new SpawnOption(null, .1f, SpawnOption.ANY);
+
+        Room.smallSpawnOptions.Add(sfoo);
+        Room.largeSpawnOptions.Add(lfoo);
+        Room.largeSpawnOptions.Add(lfoo2);
+        Room.xLargeSpawnOptions.Add(xfoo);
+
+        for (int i = 0; i < Room.smallSpawnOptions.Count; ++i)
+        {
+            Room.smallSpawnOptions[i].index = i;
+        }
+
+        for (int i = 0; i < Room.largeSpawnOptions.Count; ++i)
+        {
+            Room.largeSpawnOptions[i].index = i;
+        }
+
+        for (int i = 0; i < Room.xLargeSpawnOptions.Count; ++i)
+        {
+            Room.xLargeSpawnOptions[i].index = i;
+        }
     }
 
     // Update is called once per frame
@@ -181,8 +216,11 @@ public class MapController : MonoBehaviour
      */
     private Vector2 generateRoomSize()
     {
-        float x = 4 * Mathf.Sqrt(UnityEngine.Random.Range(0, 100)) + 5;
-        float y = 4 * Mathf.Sqrt(UnityEngine.Random.Range(0, 100)) + 5;
+        float x = 5 * Mathf.Sqrt(UnityEngine.Random.Range(0, 50)) + Room.LARGE_GRID_SIZE;
+        float y = 5 * Mathf.Sqrt(UnityEngine.Random.Range(0, 50)) + Room.LARGE_GRID_SIZE;
+
+        x = x - x % Room.LARGE_GRID_SIZE;
+        y = y - y % Room.LARGE_GRID_SIZE;
         return new Vector2(x, y);
     }
 
@@ -224,5 +262,14 @@ public class MapController : MonoBehaviour
 
 
         return hallway;
+    }
+
+
+    public void setRoomGridsVisible(bool b)
+    {
+        foreach(Room room in _rooms)
+        {
+            room.SetGridVisible(b);
+        }
     }
 }

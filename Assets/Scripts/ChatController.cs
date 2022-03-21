@@ -1,3 +1,10 @@
+/*
+ * Authors: Ryan Coughlin
+ * Class: CS-583 Price, Group 13
+ * Desc: This class controls chat/command window
+ * 
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +18,7 @@ public class ChatController : MonoBehaviour
     private InputField _inputField;
     private Text _outputText;
     private PlayerController _playerController;
+    private MapController _mapController;
     private CanvasGroup _chatCanvasGroup, _inputCanvasGroup;
     private Animator _animator;
     private LinkedList<GameObject> _chatTexts;
@@ -46,6 +54,7 @@ public class ChatController : MonoBehaviour
         //_outputText = GameObject.Find("OutputText").GetComponent<Text>();
 
         _playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        _mapController = GameObject.Find("MapController").GetComponent<MapController>();
         _animator = _chat.GetComponent<Animator>();
         _chatTextPrefab = Resources.Load<GameObject>("Prefabs/ChatText");
     }
@@ -306,6 +315,21 @@ public class ChatController : MonoBehaviour
                     {
                         _playerController.fly = false;
                         write("Flying off.");
+                    }
+                }
+                break;
+            case "tiles":
+                if (split.Length > 1)
+                {
+                    if (split[1].Equals("on"))
+                    {
+                        _mapController.setRoomGridsVisible(true);
+                        write("Spawn tiles on.");
+                    }
+                    else if (split[1].Equals("off"))
+                    {
+                        _mapController.setRoomGridsVisible(false);
+                        write("Spawn tiles off.");
                     }
                 }
                 break;
