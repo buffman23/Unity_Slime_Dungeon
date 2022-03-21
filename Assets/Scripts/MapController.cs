@@ -1,4 +1,4 @@
-/*
+/*_roomPrefab
  * Authors: Ryan Coughlin
  * Class: CS-583 Price, Group 13
  * Desc: Controls Game.
@@ -12,7 +12,9 @@ using UnityEngine;
 
 public class MapController : MonoBehaviour
 {
-    public Room prefab;
+    private Room _roomPrefab;
+    private Hallway _hallwayPrefab;
+
     public Vector2 spawnPoint;
 
     private List<Room> _rooms;
@@ -31,7 +33,9 @@ public class MapController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        prefab.doorwayDimensions = this.doorwayDimensions;
+        initReferences();
+
+        _roomPrefab.doorwayDimensions = this.doorwayDimensions;
 
         _roomGrid = new Room[_gridDimension.x, _gridDimension.y];
         _rooms = new List<Room>(_roomCount);
@@ -49,9 +53,9 @@ public class MapController : MonoBehaviour
         {
             roomPosition = new Vector3(gridPosition.x * _tileSize.x - spawnPointOffset.x, 0f, gridPosition.y * _tileSize.y - spawnPointOffset.y);
             Vector2 wall2dDim = generateRoomSize();
-            prefab.size = new Vector3(wall2dDim.x, _roomHeight, wall2dDim.y);
+            _roomPrefab.size = new Vector3(wall2dDim.x, _roomHeight, wall2dDim.y);
 
-            Room room = Instantiate(prefab, roomPosition, Quaternion.identity);
+            Room room = Instantiate(_roomPrefab, roomPosition, Quaternion.identity);
             room.name = "Room_" + i;
             room.gridPosition.x = gridPosition.x;
             room.gridPosition.y = gridPosition.y;
@@ -106,6 +110,12 @@ public class MapController : MonoBehaviour
 
             prevRoom = room;
         }
+    }
+
+    private void initReferences()
+    {
+        _roomPrefab = Resources.Load<Room>("Prefabs/Room");
+        _hallwayPrefab = Resources.Load<Hallway>("Prefabs/Hallway");
     }
 
     // Update is called once per frame
@@ -176,7 +186,7 @@ public class MapController : MonoBehaviour
         return new Vector2(x, y);
     }
 
-    private Room MakeHallway(GameObject wall1, GameObject wall2)
+    private Hallway MakeHallway(GameObject wall1, GameObject wall2)
     {
         Vector3 roomPosition = Vector3.zero;
         roomPosition = (wall1.transform.position + wall2.transform.position) / 2;
@@ -203,9 +213,9 @@ public class MapController : MonoBehaviour
 
         }
 
-        prefab.size = new Vector3(dx, wall1.transform.localScale.y, dz);
+        _hallwayPrefab.size = new Vector3(dx, wall1.transform.localScale.y, dz);
 
-        Room hallway = Instantiate(prefab, roomPosition, Quaternion.identity);
+        Hallway hallway = Instantiate(_hallwayPrefab, roomPosition, Quaternion.identity);
 
         hallway.RemoveWall(walls2Remove[0]);
         hallway.RemoveWall(walls2Remove[1]);

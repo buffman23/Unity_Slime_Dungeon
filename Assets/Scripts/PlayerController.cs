@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
     public float mouseSensitivity = 10f;
 
+    public bool fly = false;
 
     public Transform groudCheck;
 
@@ -79,12 +80,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        Debug.Log("velocity.y: "+_velocity.y);
         _isGrounded = Physics.CheckSphere(groudCheck.position, groundDistance, groundMask);
 
         bool braceLand = Physics.CheckSphere(groudCheck.position, _braceLandDistance, groundMask);
 
-        if (_isGrounded && _velocity.y < 0)
+        if (_isGrounded && _velocity.y < 0 && !fly)
         {
             _velocity.y = -2f;
         }
@@ -97,7 +98,7 @@ public class PlayerController : MonoBehaviour
 
         float moveSpeed = _prevSpeed;
 
-        if (_isGrounded)
+        if (_isGrounded || fly)
         {
             float acceleration = _acceleration;
 
@@ -138,11 +139,31 @@ public class PlayerController : MonoBehaviour
 
         _characterController.Move(moveSpeed * Time.deltaTime * move);
 
-        _velocity.y += gravity * Time.deltaTime;
 
-        if (Input.GetButtonDown("Jump") && _isGrounded)
+
+        if (fly)
         {
-            _velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravity);
+            if (Input.GetKey(KeyCode.Space))
+            {
+                Debug.Log("space bar");
+                _velocity.y = 7;
+            }
+            else if (Input.GetKey(KeyCode.LeftControl))
+            {
+                _velocity.y = -7;
+            } else
+            {
+                _velocity.y = 0;
+            }
+        }
+        else
+        {
+            _velocity.y += gravity * Time.deltaTime;
+            if (Input.GetButtonDown("Jump") && _isGrounded)
+            {
+
+                _velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
         }
 
         _characterController.Move(_velocity * Time.deltaTime);

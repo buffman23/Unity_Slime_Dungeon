@@ -122,6 +122,7 @@ public class ChatController : MonoBehaviour
                 write("jump [jump height]/reset - change player jump height");
                 write("chat stay/fade - makes chat window stay or fade after closed");
                 write("cam [offset] - offset camera to get 3rd person view. 0 to go back to 1st person.");
+                write("fly on/off - toggles flying");
                 break;
 
             case "cube":
@@ -290,6 +291,22 @@ public class ChatController : MonoBehaviour
                 catch (System.FormatException e)
                 {
 
+                }
+                break;
+
+            case "fly":
+                if (split.Length > 1)
+                {
+                    if (split[1].Equals("on"))
+                    {
+                        _playerController.fly = true;
+                        write("Flying on.");
+                    }
+                    else if (split[1].Equals("off"))
+                    {
+                        _playerController.fly = false;
+                        write("Flying off.");
+                    }
                 }
                 break;
 

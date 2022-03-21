@@ -32,6 +32,14 @@ public class Room : MonoBehaviour
 
     private Material _roomMaterial;
 
+    private List<GameObject> _spawnObjects;
+
+    private List<List<int>> _smallSpawnGrid, largeSpawnGrid;
+
+    private const float SMALL_GRID_SIZE = 1;
+    private const float LARGE_GRID_SIZE = 8;
+
+
 
     private void Awake()
     {
