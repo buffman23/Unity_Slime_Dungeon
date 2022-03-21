@@ -34,6 +34,11 @@ public class PlayerController : MonoBehaviour
 
     private float _x, _z;
 
+    private float _prevSpeed;
+
+    private float _landAcceleration = .01f, _acceleration = 100;
+
+    private float _timeOnGround = 0;
 
     private float _xRotation = 0f;
 
@@ -47,6 +52,8 @@ public class PlayerController : MonoBehaviour
 
     private Animator _animator;
 
+    private float _savedStepOffset;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,6 +65,8 @@ public class PlayerController : MonoBehaviour
         _xRotation = Camera.main.transform.localRotation.x;
 
         _braceLandDistance = -gravity * Time.fixedDeltaTime * 10;
+
+        _savedStepOffset = _characterController.stepOffset;
     }
 
     private void InitReferences()
@@ -86,15 +95,37 @@ public class PlayerController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        float moveSpeed = 0;
+        float moveSpeed = _prevSpeed;
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (_isGrounded)
         {
-            moveSpeed = runSpeed;
-        } else
-        {
-            moveSpeed = walkSpeed;
+            float acceleration = _acceleration;
+
+            if(_timeOnGround < .5f)
+            {
+                acceleration = _landAcceleration;
+            }
+
+            // only change walk speeds if on the ground
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                moveSpeed = Mathf.Min(_prevSpeed + acceleration, runSpeed);
+            }
+            else
+            {
+                moveSpeed = Mathf.Max(_prevSpeed - acceleration, walkSpeed);
+            }
+
+            _prevSpeed = moveSpeed;
+            _timeOnGround += Time.deltaTime;
+            _characterController.stepOffset = _savedStepOffset;
         }
+        else
+        {
+            _timeOnGround = 0f;
+            _characterController.stepOffset = 0f;
+        }
+
 
         _xRotation -= mouseY;
         _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
@@ -119,8 +150,20 @@ public class PlayerController : MonoBehaviour
         _animator.SetFloat("Speed", (moveSpeed * move).magnitude);
         _animator.SetFloat("Forward", _z);
         _animator.SetFloat("Right", _x);
-        _animator.SetFloat("Vertical", _velocity.y);
+        _animator.SetFloat("Vertical", Mathf.Abs(_velocity.y));
         _animator.SetBool("Grounded", _isGrounded);
         _animator.SetBool("BraceLand", braceLand);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Rigidbody rb;
+        Debug.Log("collison:" + collision.gameObject.name);
+        if ((rb = collision.gameObject.GetComponent<Rigidbody>()) != null)
+        {
+            Vector3 playerPush = _playerTrans.transform.forward * _prevSpeed;
+            rb.AddForce(playerPush);
+            Debug.Log("push");
+        }
     }
 }

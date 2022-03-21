@@ -18,33 +18,38 @@ public class MapController : MonoBehaviour
     private List<Room> _rooms;
     private List<Room> _nonDeadEnds;
     private Room[,] _roomGrid;
+    public Vector2 doorwayDimensions = new Vector2(3f, 4f);
     private static Vector2Int _gridDimension = new Vector2Int(100, 100);
     private static Vector2Int _gridStart = new Vector2Int(_gridDimension.x/2, _gridDimension.y / 2);
     private static Vector2 _tileSize = new Vector2(46, 46);
     private static float _roomHeight = 5;
-    int room_count = 25;
+    private int _roomCount = 25;
+    private float _hallwayPosition = .5f;
 
     private Vector2Int gridPositionDelta = Vector2Int.zero;
 
     // Start is called before the first frame update
     void Start()
     {
+        prefab.doorwayDimensions = this.doorwayDimensions;
+
         _roomGrid = new Room[_gridDimension.x, _gridDimension.y];
-        _rooms = new List<Room>(room_count);
-        _nonDeadEnds = new List<Room>(room_count);
+        _rooms = new List<Room>(_roomCount);
+        _nonDeadEnds = new List<Room>(_roomCount);
 
         Vector3 roomPosition = Vector3.zero;
         Vector2Int gridPosition = new Vector2Int(_gridStart.x, _gridStart.y);
         Room prevRoom = null;
+        GameObject prevWall = null, wall = null;
 
         Vector2 spawnPointOffset = new Vector2(gridPosition.x * _tileSize.x, gridPosition.y * _tileSize.y);
 
         // generate random rooms
-        for (int i = 0; i < room_count; ++i)
+        for (int i = 0; i < _roomCount; ++i)
         {
             roomPosition = new Vector3(gridPosition.x * _tileSize.x - spawnPointOffset.x, 0f, gridPosition.y * _tileSize.y - spawnPointOffset.y);
-            Vector2 room2dDim = generateRoomSize();
-            prefab.size = new Vector3(room2dDim.x, _roomHeight, room2dDim.y);
+            Vector2 wall2dDim = generateRoomSize();
+            prefab.size = new Vector3(wall2dDim.x, _roomHeight, wall2dDim.y);
 
             Room room = Instantiate(prefab, roomPosition, Quaternion.identity);
             room.name = "Room_" + i;
@@ -57,11 +62,13 @@ public class MapController : MonoBehaviour
             // remember last room to connect with hallway.
             if (prevRoom != null)
             {
-                room.MakeDoorway(-gridPositionDelta, .5f);
+                wall = room.getWall(-gridPositionDelta);
+                room.MakeDoorway(-gridPositionDelta, _hallwayPosition);
+                MakeHallway(prevWall, wall);
             }
 
             // Last room wont have another room to make so break early
-            if (i == room_count - 1)
+            if (i == _roomCount - 1)
             {
                 break;
             }
@@ -91,8 +98,11 @@ public class MapController : MonoBehaviour
             gridPositionDelta = validNextTiles[(int)UnityEngine.Random.Range(0, validNextTiles.Count)];
             gridPosition += gridPositionDelta;
 
-            if(i != room_count - 1)
-                room.MakeDoorway(gridPositionDelta, .5f);
+            if (i != _roomCount - 1)
+            {
+                room.MakeDoorway(gridPositionDelta, _hallwayPosition);
+                prevWall = room.getWall(gridPositionDelta);
+            }
 
             prevRoom = room;
         }
@@ -164,5 +174,45 @@ public class MapController : MonoBehaviour
         float x = 4 * Mathf.Sqrt(UnityEngine.Random.Range(0, 100)) + 5;
         float y = 4 * Mathf.Sqrt(UnityEngine.Random.Range(0, 100)) + 5;
         return new Vector2(x, y);
+    }
+
+    private Room MakeHallway(GameObject wall1, GameObject wall2)
+    {
+        Vector3 roomPosition = Vector3.zero;
+        roomPosition = (wall1.transform.position + wall2.transform.position) / 2;
+
+        float dx = Mathf.Abs(wall1.transform.position.x - wall2.transform.position.x);
+        float dz = Mathf.Abs(wall1.transform.position.z - wall2.transform.position.z);
+
+        // whichever dim is 0, should be hallway width
+        int[] walls2Remove = new int[2];
+
+        if (dx == 0)
+        {
+            dx = doorwayDimensions.y - Room.wallThickness - .01f; 
+            walls2Remove[0] = Room.EAST_WALL;
+            walls2Remove[1] = Room.WEST_WALL;
+            dz += Room.wallThickness - .01f;
+        }
+        else
+        {
+            dz = doorwayDimensions.y - Room.wallThickness - .01f;
+            walls2Remove[0] = Room.NORTH_WALL;
+            walls2Remove[1] = Room.SOUTH_WALL;
+            dx += Room.wallThickness - .01f;
+
+        }
+
+        prefab.size = new Vector3(dx, wall1.transform.localScale.y, dz);
+
+        Room hallway = Instantiate(prefab, roomPosition, Quaternion.identity);
+
+        hallway.RemoveWall(walls2Remove[0]);
+        hallway.RemoveWall(walls2Remove[1]);
+
+        hallway.transform.position = new Vector3(hallway.transform.position.x, hallway.transform.position.y - wall1.transform.localScale.y/2 - Room.wallThickness/2,hallway.transform.position.z);
+
+
+        return hallway;
     }
 }
