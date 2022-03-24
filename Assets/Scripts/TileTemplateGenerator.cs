@@ -14,17 +14,17 @@ public class TileTemplateGenerator : MonoBehaviour
         InitReferences();
 
         
-        GenerateFloorTile(Room.XLARGE_GRID_SIZE);
-        GenerateWallTile(Room.XLARGE_GRID_SIZE);
-        GenerateCornerTile(Room.XLARGE_GRID_SIZE);
+        //GenerateFloorTile(Room.XLARGE_GRID_SIZE);
+        //GenerateWallTile(Room.XLARGE_GRID_SIZE);
+        //GenerateCornerTile(Room.XLARGE_GRID_SIZE);
 
-        GenerateFloorTile(Room.LARGE_GRID_SIZE);
-        GenerateWallTile(Room.LARGE_GRID_SIZE);
-        GenerateCornerTile(Room.LARGE_GRID_SIZE);
+        //GenerateFloorTile(Room.LARGE_GRID_SIZE);
+        //GenerateWallTile(Room.LARGE_GRID_SIZE);
+        //GenerateCornerTile(Room.LARGE_GRID_SIZE);
 
-        GenerateFloorTile(Room.SMALL_GRID_SIZE);
-        //GenerateWallTile(Room.SMALL_GRID_SIZE);
-        //GenerateCornerTile(Room.SMALL_GRID_SIZE);
+        //GenerateFloorTile(Room.SMALL_GRID_SIZE);
+        GenerateWallTile(Room.SMALL_GRID_SIZE);
+        GenerateCornerTile(Room.SMALL_GRID_SIZE);
     }
 
     private void InitReferences()
@@ -59,7 +59,7 @@ public class TileTemplateGenerator : MonoBehaviour
         wall.GetComponent<MeshRenderer>().material = _material;
 
         wall.transform.localScale = new Vector3(tileSize, WALL_HEIGHT, TILE_THICKNESS);
-        wall.transform.position = new Vector3(0, WALL_HEIGHT/2 + TILE_THICKNESS/2, tileSize / 2 + TILE_THICKNESS/2);
+        wall.transform.position = new Vector3(0, WALL_HEIGHT/2f + TILE_THICKNESS/2f, tileSize / 2f + TILE_THICKNESS/2f);
 
         wall.transform.SetParent(template.transform);
 
@@ -75,7 +75,7 @@ public class TileTemplateGenerator : MonoBehaviour
         wall.name = "Wall2";
         wall.GetComponent<MeshRenderer>().material = _material;
         wall.transform.localScale = new Vector3(TILE_THICKNESS, 5f, tileSize);
-        wall.transform.position = new Vector3(tileSize / 2 + TILE_THICKNESS/2, WALL_HEIGHT / 2 + TILE_THICKNESS/2, 0);
+        wall.transform.position = new Vector3(tileSize / 2f + TILE_THICKNESS/2f, WALL_HEIGHT / 2f + TILE_THICKNESS/2f, 0);
 
         wall.transform.SetParent(template.transform);
 
