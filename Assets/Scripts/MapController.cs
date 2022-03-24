@@ -24,7 +24,7 @@ public class MapController : MonoBehaviour
     private static Vector2Int _gridDimension = new Vector2Int(100, 100);
     private static Vector2Int _gridStart = new Vector2Int(_gridDimension.x/2, _gridDimension.y / 2);
     private static Vector2 _tileSize = new Vector2(46, 46);
-    private static float _roomHeight = 5;
+    private static float _roomHeight = 15;
     private int _roomCount = 25;
     private float _hallwayPosition = .5f;
 
@@ -33,9 +33,9 @@ public class MapController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        initReferences();
+        InitReferences();
 
-        initRoomSpawnOptions();
+        InitRoomSpawnOptions();
 
         _roomPrefab.doorwayDimensions = this.doorwayDimensions;
 
@@ -49,6 +49,8 @@ public class MapController : MonoBehaviour
         GameObject prevWall = null, wall = null;
 
         Vector2 spawnPointOffset = new Vector2(gridPosition.x * _tileSize.x, gridPosition.y * _tileSize.y);
+        GameObject map = new GameObject();
+        map.name = "map";
 
         // generate random rooms
         for (int i = 0; i < _roomCount; ++i)
@@ -58,6 +60,7 @@ public class MapController : MonoBehaviour
             _roomPrefab.size = new Vector3(wall2dDim.x, _roomHeight, wall2dDim.y);
 
             Room room = Instantiate(_roomPrefab, roomPosition, Quaternion.identity);
+            room.transform.SetParent(map.transform);
             room.name = "Room_" + i;
             room.gridPosition.x = gridPosition.x;
             room.gridPosition.y = gridPosition.y;
@@ -70,7 +73,8 @@ public class MapController : MonoBehaviour
             {
                 wall = room.getWall(-gridPositionDelta);
                 room.MakeDoorway(-gridPositionDelta, _hallwayPosition);
-                MakeHallway(prevWall, wall);
+                Hallway hallway = MakeHallway(prevWall, wall);
+                hallway.transform.SetParent(map.transform);
             }
 
             // Last room wont have another room to make so break early
@@ -113,50 +117,36 @@ public class MapController : MonoBehaviour
             prevRoom = room;
         }
 
-        setRoomGridsVisible(true);
+        //setRoomGridsVisible(true);
     }
 
-    private void initReferences()
+    private void InitReferences()
     {
         _roomPrefab = Resources.Load<Room>("Prefabs/Room");
         _hallwayPrefab = Resources.Load<Hallway>("Prefabs/Hallway");
     }
-    private void initRoomSpawnOptions()
+
+    private void InitRoomSpawnOptions()
     {
+        SpawnOption[] spawnOptions = Resources.LoadAll<SpawnOption>("Prefabs/SpawnOptions");
+
         Room.smallSpawnOptions = new List<SpawnOption>();
         Room.largeSpawnOptions = new List<SpawnOption>();
         Room.xLargeSpawnOptions = new List<SpawnOption>();
 
-        SpawnOption sfoo = new SpawnOption(null, .01f, SpawnOption.ANY);
-        SpawnOption lfoo = new SpawnOption(null, .2f, SpawnOption.ANY);
-        SpawnOption lfoo2 = new SpawnOption(null, .2f, SpawnOption.CONRNER);
-        SpawnOption xfoo = new SpawnOption(null, .1f, SpawnOption.ANY);
-
-        Room.smallSpawnOptions.Add(sfoo);
-        Room.largeSpawnOptions.Add(lfoo);
-        Room.largeSpawnOptions.Add(lfoo2);
-        Room.xLargeSpawnOptions.Add(xfoo);
-
-        for (int i = 0; i < Room.smallSpawnOptions.Count; ++i)
+        foreach (SpawnOption so in spawnOptions)
         {
-            Room.smallSpawnOptions[i].index = i;
+            if (so.tag.Equals("SpawnOptionS"))
+            {
+                Room.smallSpawnOptions.Add(so);
+            }else if (so.tag.Equals("SpawnOptionL"))
+            {
+                Room.largeSpawnOptions.Add(so);
+            } else if (so.tag.Equals("SpawnOptionX"))
+            {
+                Room.xLargeSpawnOptions.Add(so);
+            }
         }
-
-        for (int i = 0; i < Room.largeSpawnOptions.Count; ++i)
-        {
-            Room.largeSpawnOptions[i].index = i;
-        }
-
-        for (int i = 0; i < Room.xLargeSpawnOptions.Count; ++i)
-        {
-            Room.xLargeSpawnOptions[i].index = i;
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     /*

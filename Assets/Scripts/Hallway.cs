@@ -16,9 +16,11 @@ using UnityEngine;
 
 class Hallway : Room
 {
-    public Hallway() : base()
+    private void Start()
     {
-        
+        _ceiling.transform.position = new Vector3(_ceiling.transform.position.x, 
+            _floor.transform.position.y + doorwayDimensions.y * this.transform.localScale.y + _ceiling.transform.localScale.y -.001f,
+            _ceiling.transform.position.z);
     }
     public void Trapify()
     {

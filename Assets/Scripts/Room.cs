@@ -25,11 +25,13 @@ public class Room : MonoBehaviour
 
     public const int NORTH_WALL = 0, EAST_WALL = 1, SOUTH_WALL = 2, WEST_WALL = 3;
 
+    public const int NE_CORNER = 0, SE_CORNER = 1, SW_CORNER = 2, NW_CORNER = 3;
+
     private GameObject[] _walls = new GameObject[4];
 
-    private GameObject _floor;
+    protected GameObject _floor;
 
-    private GameObject _ceiling;
+    protected GameObject _ceiling;
 
     private Material _roomMaterial, _smallTileMaterial, _largeTileMaterial, _xLargeTileMaterial;
 
@@ -55,9 +57,17 @@ public class Room : MonoBehaviour
         _floor.transform.SetParent(transform);
         _floor.transform.localPosition = new Vector3(0, 0, 0);
         _floor.transform.localScale = new Vector3(size.x, wallThickness, size.z);
-        _floor.name = transform.gameObject.name + "__floor";
+        _floor.name = transform.gameObject.name + "_floor";
         _floor.GetComponent<Renderer>().material = _roomMaterial;
         _floor.layer = LayerMask.NameToLayer("Ground");
+
+        _ceiling = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        _ceiling.transform.SetParent(transform);
+        _ceiling.transform.localPosition = new Vector3(0, size.y + wallThickness, 0);
+        _ceiling.transform.localScale = new Vector3(size.x, wallThickness, size.z);
+        _ceiling.name = transform.gameObject.name + "_ceiling";
+        _ceiling.GetComponent<Renderer>().material = _roomMaterial;
+        Destroy(_ceiling.GetComponent<BoxCollider>());
 
         GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         wall.transform.SetParent(transform);
@@ -135,10 +145,13 @@ public class Room : MonoBehaviour
         _drawGridObjects = new List<GameObject>((int)(_largeSpawnGrid.GetLength(1)) * _largeSpawnGrid.GetLength(1));
 
         if (_xLargeSpawnGrid.GetLength(0) != 0 && _xLargeSpawnGrid.GetLength(1) != 0)
-            generateTileNums(_xLargeSpawnGrid, _largeSpawnGrid, xLargeSpawnOptions, XLARGE_GRID_SIZE/LARGE_GRID_SIZE);
-        generateTileNums(_largeSpawnGrid, null, largeSpawnOptions, LARGE_GRID_SIZE / SMALL_GRID_SIZE);
-        generateTileNums(_smallSpawnGrid, null, smallSpawnOptions, 1);
+            GenerateTileNums(_xLargeSpawnGrid, _largeSpawnGrid, xLargeSpawnOptions, XLARGE_GRID_SIZE/LARGE_GRID_SIZE);
+        GenerateTileNums(_largeSpawnGrid, null, largeSpawnOptions, LARGE_GRID_SIZE / SMALL_GRID_SIZE);
+        GenerateTileNums(_smallSpawnGrid, null, smallSpawnOptions, 1);
 
+        GenerateTiles(_xLargeSpawnGrid, XLARGE_GRID_SIZE, xLargeSpawnOptions);
+        GenerateTiles(_largeSpawnGrid, LARGE_GRID_SIZE, largeSpawnOptions);
+        GenerateTiles(_smallSpawnGrid, SMALL_GRID_SIZE, smallSpawnOptions);
 
         // Temportary testing code
         //MakeDoorway(_walls[NORTH_WALL], Random.Range(0f, 1f));
@@ -228,7 +241,8 @@ public class Room : MonoBehaviour
     {
         GameObject top = GameObject.CreatePrimitive(PrimitiveType.Cube);
         top.layer = LayerMask.NameToLayer("Ground");
-        top.transform.localScale = new Vector3(wallThickness, wall.transform.localScale.y - doorwayDimensions.y, wall.transform.localScale.z);
+        float topHeight = wall.transform.localScale.y - doorwayDimensions.y;
+        top.transform.localScale = new Vector3(wallThickness, topHeight, wall.transform.localScale.z);
         top.transform.rotation = wall.transform.rotation;
         top.transform.SetParent(wall.transform);
         top.transform.localPosition = new Vector3(0, .5f - top.transform.localScale.y/2f, 0);
@@ -240,7 +254,7 @@ public class Room : MonoBehaviour
 
 
         GameObject left = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        left.transform.localScale = new Vector3(wallThickness, wall.transform.localScale.y - top.transform.localScale.x, 
+        left.transform.localScale = new Vector3(wallThickness, wall.transform.localScale.y - topHeight, 
             wall.transform.localScale.z * position - doorwayDimensions.x/2f);
         left.transform.rotation = wall.transform.rotation;
         left.transform.SetParent(wall.transform);
@@ -253,7 +267,7 @@ public class Room : MonoBehaviour
         left.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * left.transform.localScale.z, scale.y * left.transform.localScale.y);
 
         GameObject right = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        right.transform.localScale = new Vector3(wallThickness, wall.transform.localScale.y - top.transform.localScale.x,
+        right.transform.localScale = new Vector3(wallThickness, wall.transform.localScale.y - topHeight,
             wall.transform.localScale.z * (1 - position) - doorwayDimensions.x / 2f);
         right.transform.rotation = wall.transform.rotation;
         right.transform.SetParent(wall.transform);
@@ -264,7 +278,7 @@ public class Room : MonoBehaviour
 
         scale = right.GetComponent<Renderer>().material.mainTextureScale;
         right.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * right.transform.localScale.z, scale.y * right.transform.localScale.y);
-
+        Debug.Log(wall.transform.localScale.y);
         Destroy(wall.GetComponent<MeshRenderer>());
         Destroy(wall.GetComponent<BoxCollider>());
     }
@@ -296,10 +310,18 @@ public class Room : MonoBehaviour
         RemoveWall(wall_const);
     }
 
-    private void generateTileNums(int[,] grid, int[,] nextGrid, List<SpawnOption> spawnOptions, int gridRatio)
+    private void GenerateTileNums(int[,] grid, int[,] nextGrid, List<SpawnOption> spawnOptions, int gridRatio)
     {
         int length = grid.GetLength(0);
         int width = grid.GetLength(1);
+
+        // associate SpawnOption withs its position in spawnOptions list
+        Dictionary<SpawnOption, int> soIndexDict = new Dictionary<SpawnOption, int>(spawnOptions.Count * 2);
+
+        for(int i = 0; i < spawnOptions.Count; ++i)
+        {
+            soIndexDict.Add(spawnOptions[i], i);
+        }
 
         // create seperate lists for SpawnOptions by location type (CONRNER, WALL, CENTER, ANY)
         List<SpawnOption>[] optionLists = new List<SpawnOption>[4];
@@ -324,7 +346,7 @@ public class Room : MonoBehaviour
                     float rand = Random.Range(0f, 1f);
                     if (rand < so.probability)
                     {
-                        grid[length / 2, width / 2] = so.index;
+                        grid[length / 2, width / 2] = soIndexDict[so];
                     }
                 }
             }
@@ -351,7 +373,7 @@ public class Room : MonoBehaviour
                 float rand = Random.Range(0f, 1f);
                 if (rand < so.probability)
                 {
-                    grid[i, j] = so.index;
+                    grid[i, j] = soIndexDict[so];
                 }
             }
         }
@@ -378,7 +400,7 @@ public class Room : MonoBehaviour
                     float rand = Random.Range(0f, 1f);
                     if (rand < so.probability)
                     {
-                        grid[i, j] = so.index;
+                        grid[i, j] = soIndexDict[so];
                     }
                 }
             }
@@ -397,7 +419,7 @@ public class Room : MonoBehaviour
                     float rand = Random.Range(0f, 1f);
                     if (rand < so.probability)
                     {
-                        grid[i, j] = so.index;
+                        grid[i, j] = soIndexDict[so];
                     }
                 }
             }
@@ -428,10 +450,13 @@ public class Room : MonoBehaviour
         }
     }
 
-    private void generateTileSpawns(int[,] grid, float tileSize, List<SpawnOption> spawnOptions)
+    private void GenerateTiles(int[,] grid, float tileSize, List<SpawnOption> spawnOptions)
     {
+
         int length = grid.GetLength(0);
         int width = grid.GetLength(1);
+
+        List<GameObject> drawnTiles = new List<GameObject>(length * width);
 
         float startX = _floor.transform.position.x - _floor.transform.localScale.x / 2 + tileSize / 2;
         float startZ = _floor.transform.position.z - _floor.transform.localScale.z / 2 + tileSize / 2;
@@ -440,14 +465,93 @@ public class Room : MonoBehaviour
         {
             for (int j = 0; j < width; ++j)
             {
-                int num = grid[i, j];
-                if (num < 0)
+                if (grid[i, j] == Room.TAKEN || grid[i, j] == Room.EMPTY)
                     continue;
 
+                SpawnOption soPrefab = spawnOptions[grid[i, j]];
 
-                GameObject go = Instantiate(spawnOptions[num].gameObject);
-                go.transform.position = new Vector3(startX + tileSize * i, go.transform.localScale.y/2, startZ + tileSize * j);
-                go.transform.SetParent(this.transform);
+                SpawnOption so = Instantiate(soPrefab);
+
+                GameObject soFloor = getChild(so, "Floor");
+                float yPos = _floor.transform.position.y + _floor.transform.localScale.y / 2 - soFloor.transform.localScale.y/2;
+                so.transform.position = new Vector3(startX + tileSize * i, yPos, startZ + tileSize * j);
+
+                if (so.rotation == SpawnOption.SQUARE_ROTATION) {
+                    float randRotation = UnityEngine.Random.Range(0f, 359f);
+                    so.transform.eulerAngles = new Vector3(so.transform.rotation.x, randRotation, so.transform.rotation.z);
+                } else if(so.rotation == SpawnOption.SQUARE_ROTATION)
+                {
+                    float randRotation = UnityEngine.Random.Range(0f, 359f) % 90;
+                    so.transform.eulerAngles = new Vector3(so.transform.rotation.x, randRotation, so.transform.rotation.z);
+                }
+                else
+                {
+                    if (so.location == SpawnOption.WALL)
+                    {
+                        float rotation = getTileRotation(grid, i, j);
+                        so.transform.eulerAngles = new Vector3(so.transform.rotation.x, rotation, so.transform.rotation.z);
+                    } else if (so.location == SpawnOption.CONRNER)
+                    {
+
+                    }
+                    else
+                    {
+                        float randRotation = UnityEngine.Random.Range(0f, 359f);
+                        so.transform.eulerAngles = new Vector3(so.transform.rotation.x, randRotation, so.transform.rotation.z);
+                    }
+                }
+
+                StripTemplateObjets(so);
+
+                so.transform.parent = this.transform;
+                //so.GetComponent<SpawnOption>().enabled = false;
+
+                //cube.transform.position = new Vector3(startX + tileSize * i, .01f, startZ + tileSize * j);
+                //cube.transform.SetParent(_floor.transform);
+                //drawnTiles.Add(cube);
+            }
+        }
+    }
+
+    private float getTileRotation(int[,] grid, int x, int y)
+    {
+        if(x == 0)
+            return 270f;
+
+        if (x == grid.GetLength(0) - 1)
+            return 90f;
+
+        if (y == 0)
+            return 180f;
+
+        if (y == grid.GetLength(1) - 1)
+            return 0f;
+
+        return -10;
+    }
+
+    private GameObject getChild(SpawnOption so, string childName)
+    {
+        Transform[] children = so.GetComponentsInChildren<Transform>();
+        foreach (Transform child in children)
+        {
+            if (child.name.Equals(childName))
+            {
+                return child.gameObject;
+            }
+        }
+
+        return null;
+    }
+
+    private void StripTemplateObjets(SpawnOption so)
+    {
+        Transform[] children = so.GetComponentsInChildren<Transform>();
+        foreach (Transform child in children)
+        {
+            if (child.name.Equals("Floor") || child.name.Equals("Wall1") || child.name.Equals("Wall2"))
+            {
+                Destroy(child.gameObject);
             }
         }
     }
