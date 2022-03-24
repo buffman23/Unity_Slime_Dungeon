@@ -278,7 +278,7 @@ public class Room : MonoBehaviour
 
         scale = right.GetComponent<Renderer>().material.mainTextureScale;
         right.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * right.transform.localScale.z, scale.y * right.transform.localScale.y);
-        Debug.Log(wall.transform.localScale.y);
+
         Destroy(wall.GetComponent<MeshRenderer>());
         Destroy(wall.GetComponent<BoxCollider>());
     }
