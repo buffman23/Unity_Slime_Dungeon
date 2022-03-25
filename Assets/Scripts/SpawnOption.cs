@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class SpawnOption : MonoBehaviour
 {
-    public const int ANY = 0, WALL = 1, CONRNER = 2, CENTER = 3;
+    public const int ANY = 0, WALL = 1, CORNER = 2, CENTER = 3;
     public const int NO_ROTATION = 0, SQUARE_ROTATION = 1, ANY_ROTATION = 2;
 
     public float probability; // probability that this GameObject will be put on a tile
