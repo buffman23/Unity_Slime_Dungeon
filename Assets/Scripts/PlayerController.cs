@@ -13,11 +13,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float walkSpeed = 3f;
+    public float dragDistance;
 
-    public float runSpeed = 7f;
+    public float dragForce;
 
-    public float mouseSensitivity = 10f;
+    public float walkSpeed;
+
+    public float runSpeed;
+
+    public float mouseSensitivity;
 
     public bool fly = false;
 
@@ -54,6 +58,12 @@ public class PlayerController : MonoBehaviour
     private Animator _animator;
 
     private float _savedStepOffset;
+
+    private Vector3 _dragDestination;
+
+    private GameObject _draggedObject;
+
+    private Rigidbody _draggedObjectRB;
 
     // Start is called before the first frame update
     void Start()
@@ -96,6 +106,8 @@ public class PlayerController : MonoBehaviour
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
         float moveSpeed = _prevSpeed;
+
+        updateDrag();
 
         if (_isGrounded || fly)
         {
@@ -174,6 +186,67 @@ public class PlayerController : MonoBehaviour
         _animator.SetBool("BraceLand", braceLand);
     }
 
+    private void updateDrag()
+    {
+        // right click
+        if (Input.GetMouseButton(1))
+        {
+            if (_draggedObject == null)
+            {
+                var raycastResult = PlayerController.getLookRay();
+                bool hitSomething = raycastResult.Item1;
+                if (!hitSomething)
+                    return;
+
+                RaycastHit hit = raycastResult.Item2;
+               
+                if (hit.transform.gameObject.tag != "Draggable")
+                    return;
+
+                _draggedObject = hit.transform.gameObject;
+
+                _draggedObjectRB = _draggedObject.GetComponent<Rigidbody>();
+                _draggedObjectRB.useGravity = false;
+                _draggedObjectRB.freezeRotation = true;
+            }
+            Vector3 a = Camera.main.transform.position;
+            Vector3 b = Camera.main.transform.forward;
+            Vector3 c = Camera.main.transform.forward * dragDistance;
+            _dragDestination = Camera.main.transform.position + Camera.main.transform.forward * dragDistance + _draggedObject.transform.lossyScale.normalized/2 ;
+            Vector3 objPos = _draggedObject.transform.position;
+            Vector3 distVec = (_dragDestination - _draggedObject.transform.position);
+
+            //float multipier = distVec.magnitude - _draggedObjectRB.velocity.magnitude;
+
+            Vector3 objAcc = _draggedObjectRB.velocity * _draggedObjectRB.mass;
+            Vector3 forceVector = (distVec.normalized * distVec.magnitude - objAcc.normalized * objAcc.magnitude) * dragForce;
+            /*
+            if (distVec.magnitude > .1f)
+            {
+                forceVector =  - ;
+            }
+            else
+            {
+                forceVector = - _draggedObjectRB.velocity;
+            }*/
+
+            Debug.Log(forceVector);
+            _draggedObjectRB.AddForce(forceVector * Time.deltaTime);
+            //_draggedObjectRB.AddTorque(_draggedObjectRB.rotation.eulerAngles * _draggedObjectRB.mass * Time.deltaTime);
+
+        }
+        else
+        {
+            if (_draggedObject != null)
+            {
+                _draggedObjectRB.useGravity = true;
+                _draggedObjectRB.freezeRotation = false;
+                _draggedObjectRB = null;
+                _draggedObject = null;
+            }
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         Rigidbody rb;
@@ -184,5 +257,13 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(playerPush);
             Debug.Log("push");
         }
+    }
+    public static (bool, RaycastHit) getLookRay()
+    {
+        Vector3 start = Camera.main.transform.position;
+        Vector3 direction = Camera.main.transform.forward;
+        RaycastHit hit;
+        bool found = Physics.Raycast(start, direction, out hit, LayerMask.NameToLayer("Ground"));
+        return (found, hit);
     }
 }
