@@ -173,7 +173,7 @@ public class ChatController : MonoBehaviour
 
                 if (split.Length == 1)
                 {
-                    var result1 = getLookRay();
+                    var result1 = PlayerController.getLookRay();
                     bool found1 = result1.Item1;
 
                     if (found1)
@@ -212,7 +212,7 @@ public class ChatController : MonoBehaviour
             case "del":
                 // source: https://answers.unity.com/questions/1119002/how-can-i-get-an-object-reference-from-a-raycast.html
 
-                var result = getLookRay();
+                var result = PlayerController.getLookRay();
                 bool found = result.Item1;
 
                 if (found)
@@ -339,14 +339,5 @@ public class ChatController : MonoBehaviour
                 write("Invalid command \"" + command + '\"');
                 break;
         }
-    }
-
-    private (bool, RaycastHit) getLookRay()
-    {
-        Vector3 start = Camera.main.transform.position;
-        Vector3 direction = Camera.main.transform.forward;
-        RaycastHit hit;
-        bool found = Physics.Raycast(start, direction, out hit);
-        return (found, hit);
     }
 }

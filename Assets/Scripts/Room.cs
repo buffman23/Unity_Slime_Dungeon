@@ -368,7 +368,7 @@ public class Room : MonoBehaviour
                 continue;
 
 
-            foreach (SpawnOption so in optionLists[SpawnOption.CONRNER])
+            foreach (SpawnOption so in optionLists[SpawnOption.CORNER])
             {
                 float rand = Random.Range(0f, 1f);
                 if (rand < so.probability)
@@ -481,18 +481,20 @@ public class Room : MonoBehaviour
                     so.transform.eulerAngles = new Vector3(so.transform.rotation.x, randRotation, so.transform.rotation.z);
                 } else if(so.rotation == SpawnOption.SQUARE_ROTATION)
                 {
-                    float randRotation = UnityEngine.Random.Range(0f, 359f) % 90;
+                    float randRotation = UnityEngine.Random.Range(0f, 359f);
+                    randRotation = randRotation - randRotation % 90;
                     so.transform.eulerAngles = new Vector3(so.transform.rotation.x, randRotation, so.transform.rotation.z);
                 }
                 else
                 {
                     if (so.location == SpawnOption.WALL)
                     {
-                        float rotation = getTileRotation(grid, i, j);
+                        float rotation = getWallTileRotation(grid, i, j);
                         so.transform.eulerAngles = new Vector3(so.transform.rotation.x, rotation, so.transform.rotation.z);
-                    } else if (so.location == SpawnOption.CONRNER)
+                    } else if (so.location == SpawnOption.CORNER)
                     {
-
+                        float rotation = getCornerTileRotation(grid, i, j);
+                        so.transform.eulerAngles = new Vector3(so.transform.rotation.x, rotation, so.transform.rotation.z);
                     }
                     else
                     {
@@ -513,7 +515,7 @@ public class Room : MonoBehaviour
         }
     }
 
-    private float getTileRotation(int[,] grid, int x, int y)
+    private float getWallTileRotation(int[,] grid, int x, int y)
     {
         if(x == 0)
             return 270f;
@@ -528,6 +530,23 @@ public class Room : MonoBehaviour
             return 0f;
 
         return -10;
+    }
+
+    private float getCornerTileRotation(int[,] grid, int x, int y)
+    {
+        if (x == 0)
+        {
+            if (y == 0)
+                return 180f;
+
+            return 270f;
+        }
+        if (y == 0)
+            return 90f;
+
+        return 0f;
+
+             
     }
 
     private GameObject getChild(SpawnOption so, string childName)
