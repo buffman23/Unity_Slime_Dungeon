@@ -43,7 +43,9 @@ public class Room : MonoBehaviour
 
     private List<GameObject> _drawGridObjects;
 
-   
+    private GameObject _lightPrefab;
+
+
 
     public const int SMALL_GRID_SIZE = 1,  LARGE_GRID_SIZE = 8,  XLARGE_GRID_SIZE = 16;
 
@@ -205,6 +207,8 @@ public class Room : MonoBehaviour
 
         _drawGridObjects = new List<GameObject>((int)(_largeSpawnGrid.GetLength(1)) * _largeSpawnGrid.GetLength(1));
 
+        initPresetSpawnOptions();
+
         if (_xLargeSpawnGrid.GetLength(0) != 0 && _xLargeSpawnGrid.GetLength(1) != 0)
             GenerateTileNums(_xLargeSpawnGrid, _largeSpawnGrid, xLargeSpawnOptions, XLARGE_GRID_SIZE/LARGE_GRID_SIZE);
         GenerateTileNums(_largeSpawnGrid, null, largeSpawnOptions, LARGE_GRID_SIZE / SMALL_GRID_SIZE);
@@ -226,12 +230,75 @@ public class Room : MonoBehaviour
         _smallTileMaterial = Resources.Load<Material>("Materials/SmallTile");
         _largeTileMaterial = Resources.Load<Material>("Materials/LargeTile");
         _xLargeTileMaterial = Resources.Load<Material>("Materials/XLargeTile");
+
+        _lightPrefab = Resources.Load<GameObject>("Prefabs/SpawnOptions/WallLight");
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    private void initPresetSpawnOptions()
+    {
+        float roomArea = size.x * size.z;
+        int lightCount = 1;
+        if(roomArea > 529)
+        {
+            lightCount = 2;
+        }
+
+        // wall tiles
+        int length = _smallSpawnGrid.GetLength(0);
+        int width = _smallSpawnGrid.GetLength(1);
+        List<Vector2Int> wallsPos = new List<Vector2Int>(length * width);
+        for (int i = 0; i < length; ++i)
+        {
+            for (int j = 0; j < width; ++j)
+            {
+                // skip any non-wall tiles
+                if (i != 0 && i != length - 1)
+                {
+                    if (j != 0 && j != width - 1)
+                    {
+                        continue;
+                    }
+                }
+
+                wallsPos.Add(new Vector2Int(i, j));
+            }
+        }
+
+        float startX = _floor.transform.position.x - _floor.transform.lossyScale.x / 2 + SMALL_GRID_SIZE / 2f;
+        float startZ = _floor.transform.position.z - _floor.transform.localScale.z / 2 + SMALL_GRID_SIZE / 2f;
+
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.transform.position = new Vector3(startX, 0, startZ);
+
+        for (int i = 0; i < lightCount; ++i)
+        {
+            Vector2Int randPos = wallsPos[(int)Random.Range(0, wallsPos.Count)];
+            int randX = randPos.x;
+            int randY = randPos.y;
+            if (_smallSpawnGrid[randX, randY] == Room.TAKEN)
+            {
+                --i;
+                continue;
+            }
+            _smallSpawnGrid[randX, randY] = Room.TAKEN;
+
+            GameObject lamp = Instantiate(_lightPrefab);
+            GameObject soFloor = lamp.transform.Find("Floor").gameObject;
+            float yPos = _floor.transform.position.y + _floor.transform.lossyScale.y / 2 - soFloor.transform.lossyScale.y / 2;
+            lamp.transform.position = new Vector3(startX + SMALL_GRID_SIZE * randX, yPos, startZ + SMALL_GRID_SIZE * randY);
+
+            float rotation = getWallTileRotation(_smallSpawnGrid, randX, randY);
+            lamp.transform.eulerAngles = new Vector3(lamp.transform.rotation.x, rotation, lamp.transform.rotation.z);
+
+            Destroy(soFloor);
+            Destroy(lamp.transform.Find("Wall1").gameObject);
+        }
     }
 
     public GameObject getWall(int side)

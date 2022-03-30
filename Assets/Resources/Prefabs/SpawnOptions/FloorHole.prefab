@@ -438,6 +438,7 @@ MonoBehaviour:
   location: 0
   rotation: 0
   maxPerRoom: 3
+  includeInTilePool: 1
 --- !u!114 &2554651209291601138
 MonoBehaviour:
   m_ObjectHideFlags: 0

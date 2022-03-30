@@ -5,6 +5,7 @@
  * 
  */
 
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnOption : MonoBehaviour
@@ -23,6 +24,7 @@ public class SpawnOption : MonoBehaviour
     public float probability; // probability that this GameObject will be put on a tile
     public int location; // location in room this GameObject will be places. Not x,y coordinates, but tile type.
     public int rotation;
-    public int maxPerRoom = int.MaxValue;
+    public int maxPerRoom; // max spawns per room(
+    public bool includeInTilePool = true; 
 }
 

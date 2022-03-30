@@ -136,6 +136,9 @@ public class MapController : MonoBehaviour
 
         foreach (SpawnOption so in spawnOptions)
         {
+            if (!so.includeInTilePool)
+                continue;
+
             if (so.tag.Equals("SpawnOptionS"))
             {
                 Room.smallSpawnOptions.Add(so);

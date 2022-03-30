@@ -545,6 +545,7 @@ MonoBehaviour:
   location: 0
   rotation: 1
   maxPerRoom: 100
+  includeInTilePool: 1
 --- !u!1 &8879445753094421537
 GameObject:
   m_ObjectHideFlags: 0

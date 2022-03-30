@@ -674,3 +674,4 @@ MonoBehaviour:
   location: 2
   rotation: 0
   maxPerRoom: 100
+  includeInTilePool: 1

@@ -296,7 +296,7 @@ GameObject:
   - component: {fileID: 2065905410361020648}
   - component: {fileID: -8962952604698092539}
   m_Layer: 0
-  m_Name: WallTileTemplate 1
+  m_Name: WallLight
   m_TagString: SpawnOptionS
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -331,10 +331,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 538a564126100c147bed6dd14e7eeafe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  probability: 0.01
+  probability: 1
   location: 1
   rotation: 0
-  maxPerRoom: 100
+  maxPerRoom: 1
+  includeInTilePool: 0
 --- !u!1001 &4675730464269543748
 PrefabInstance:
   m_ObjectHideFlags: 0

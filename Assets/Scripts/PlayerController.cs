@@ -110,9 +110,9 @@ public class PlayerController : MonoBehaviour
         _x = Input.GetAxis("Horizontal");
         _z = Input.GetAxis("Vertical");
 
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        Debug.Log(Input.GetAxis("Mouse X"));
         float moveSpeed = _prevSpeed;
 
         if (_isGrounded || fly)
@@ -150,6 +150,7 @@ public class PlayerController : MonoBehaviour
 
         Camera.main.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
         _lastUpdateRotate = Quaternion.Euler(_xRotation, 0f, 0f);
+        
         _playerTrans.Rotate(Vector3.up * mouseX);
 
         Vector3 move = _playerTrans.transform.forward * _z + _playerTrans.transform.right * _x;

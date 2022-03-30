@@ -144,6 +144,7 @@ MonoBehaviour:
   location: 0
   rotation: 2
   maxPerRoom: 100
+  includeInTilePool: 1
 --- !u!1001 &647070894048975328
 PrefabInstance:
   m_ObjectHideFlags: 0
