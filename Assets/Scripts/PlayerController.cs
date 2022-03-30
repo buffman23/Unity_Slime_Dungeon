@@ -13,6 +13,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public float cameraHeadOffset;
+    public static float headRaycastOffset;
     public float dragDistance;
 
     public float dragForce;
@@ -65,6 +67,10 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody _draggedObjectRB;
 
+    private Transform _neckTrans, _headTrans;
+
+    private Quaternion _lastUpdateRotate;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -85,6 +91,8 @@ public class PlayerController : MonoBehaviour
         _playerTrans = GetComponent<Transform>();
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
+        _neckTrans = transform.Find("PlayerRig/Armature/Hips/Spine/Chest/UpperChest/Neck").transform;
+        _headTrans = _neckTrans.Find("Head");
     }
 
     // Update is called once per frame
@@ -106,8 +114,6 @@ public class PlayerController : MonoBehaviour
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
         float moveSpeed = _prevSpeed;
-
-        updateDrag();
 
         if (_isGrounded || fly)
         {
@@ -143,6 +149,7 @@ public class PlayerController : MonoBehaviour
         _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
 
         Camera.main.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
+        _lastUpdateRotate = Quaternion.Euler(_xRotation, 0f, 0f);
         _playerTrans.Rotate(Vector3.up * mouseX);
 
         Vector3 move = _playerTrans.transform.forward * _z + _playerTrans.transform.right * _x;
@@ -186,6 +193,11 @@ public class PlayerController : MonoBehaviour
         _animator.SetBool("BraceLand", braceLand);
     }
 
+    private void FixedUpdate()
+    {
+        updateDrag();
+    }
+
     private void updateDrag()
     {
         // right click
@@ -212,14 +224,16 @@ public class PlayerController : MonoBehaviour
             Vector3 a = Camera.main.transform.position;
             Vector3 b = Camera.main.transform.forward;
             Vector3 c = Camera.main.transform.forward * dragDistance;
-            _dragDestination = Camera.main.transform.position + Camera.main.transform.forward * dragDistance + _draggedObject.transform.lossyScale.normalized/2 ;
+            _dragDestination = Camera.main.transform.position + Camera.main.transform.forward * dragDistance;
+            //_dragDestination += _dragDestination.normalized * _draggedObject.transform.lossyScale.magnitude/2;
             Vector3 objPos = _draggedObject.transform.position;
             Vector3 distVec = (_dragDestination - _draggedObject.transform.position);
 
             //float multipier = distVec.magnitude - _draggedObjectRB.velocity.magnitude;
 
-            Vector3 objAcc = _draggedObjectRB.velocity * _draggedObjectRB.mass;
-            Vector3 forceVector = (distVec.normalized * distVec.magnitude - objAcc.normalized * objAcc.magnitude) * dragForce;
+            Vector3 objAcc = _draggedObjectRB.velocity ;
+            Vector3 forceVector = (distVec * dragForce - objAcc);
+            //Vector3 forceVector = (distVec * distVec.magnitude  - objAcc.normalized * objAcc.magnitude * objAcc.magnitude) * dragForce;
             /*
             if (distVec.magnitude > .1f)
             {
@@ -230,8 +244,8 @@ public class PlayerController : MonoBehaviour
                 forceVector = - _draggedObjectRB.velocity;
             }*/
 
-            Debug.Log(forceVector);
-            _draggedObjectRB.AddForce(forceVector * Time.deltaTime);
+            Debug.Log(forceVector * Time.fixedDeltaTime);
+            _draggedObjectRB.AddForce(forceVector, ForceMode.VelocityChange);
             //_draggedObjectRB.AddTorque(_draggedObjectRB.rotation.eulerAngles * _draggedObjectRB.mass * Time.deltaTime);
 
         }
@@ -247,6 +261,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        _neckTrans.localRotation = _lastUpdateRotate;
+        //Camera.main.transform.rotation = _lastUpdateRotate;
+        Camera.main.transform.position = _headTrans.position + _headTrans.up * cameraHeadOffset;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         Rigidbody rb;
@@ -260,7 +281,7 @@ public class PlayerController : MonoBehaviour
     }
     public static (bool, RaycastHit) getLookRay()
     {
-        Vector3 start = Camera.main.transform.position;
+        Vector3 start = Camera.main.transform.position + Camera.main.transform.forward * headRaycastOffset;
         Vector3 direction = Camera.main.transform.forward;
         RaycastHit hit;
         bool found = Physics.Raycast(start, direction, out hit, LayerMask.NameToLayer("Ground"));
