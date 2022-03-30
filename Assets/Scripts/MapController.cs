@@ -72,7 +72,7 @@ public class MapController : MonoBehaviour
             if (prevRoom != null)
             {
                 wall = room.getWall(-gridPositionDelta);
-                room.MakeDoorway(-gridPositionDelta, _hallwayPosition);
+                room.MakeDoorway(-gridPositionDelta, _hallwayPosition, false);
                 Hallway hallway = MakeHallway(prevWall, wall);
                 hallway.transform.SetParent(map.transform);
             }
@@ -110,7 +110,7 @@ public class MapController : MonoBehaviour
 
             if (i != _roomCount - 1)
             {
-                room.MakeDoorway(gridPositionDelta, _hallwayPosition);
+                room.MakeDoorway(gridPositionDelta, _hallwayPosition, true);
                 prevWall = room.getWall(gridPositionDelta);
             }
 

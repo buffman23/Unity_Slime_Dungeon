@@ -112,7 +112,6 @@ public class PlayerController : MonoBehaviour
 
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-        Debug.Log(Input.GetAxis("Mouse X"));
         float moveSpeed = _prevSpeed;
 
         if (_isGrounded || fly)
@@ -245,7 +244,6 @@ public class PlayerController : MonoBehaviour
                 forceVector = - _draggedObjectRB.velocity;
             }*/
 
-            Debug.Log(forceVector * Time.fixedDeltaTime);
             _draggedObjectRB.AddForce(forceVector, ForceMode.VelocityChange);
             //_draggedObjectRB.AddTorque(_draggedObjectRB.rotation.eulerAngles * _draggedObjectRB.mass * Time.deltaTime);
 

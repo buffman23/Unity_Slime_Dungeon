@@ -3,8 +3,16 @@ YoutTube Tutorials:
   - basic materials tutorial: https://www.youtube.com/watch?v=V72pMtqMgFk
   - 3D tilemap tutorial: https://www.youtube.com/watch?v=ulFc6p3hQzQ
   - player movement: https://www.youtube.com/watch?v=_QajrabyTJc&t=848s
-  - blender rigify: https://www.youtube.com/watch?v=DS885Sk1gSs
+  - blender rigging tutorial: https://www.youtube.com/watch?v=XkiWBSSuxLw
   - animator setup: https://www.youtube.com/watch?v=vApG8aYD5aI
+  - Adobe Substance 3D Painter export: https://www.youtube.com/watch?v=_4ULQ95njmQ
+  - Adobe Substance 3D Painter masking: https://www.youtube.com/watch?v=_j27AS0VQOw
+  - Adobe Substance 3D Painter intro: https://www.youtube.com/watch?v=mv6pg1O9vEQ&t
 
 Animations:
  - https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271
+
+Other:
+ - Adobe Substance 3D painter used for texturing door
+
+

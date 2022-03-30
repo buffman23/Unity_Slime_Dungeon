@@ -27,6 +27,8 @@ public class Room : MonoBehaviour
 
     public const int NE_CORNER = 0, SE_CORNER = 1, SW_CORNER = 2, NW_CORNER = 3;
 
+    private static GameObject _lightPrefab, _doorPrefab;
+
     private GameObject[] _walls = new GameObject[4];
 
     protected GameObject _floor;
@@ -35,7 +37,7 @@ public class Room : MonoBehaviour
 
     protected GameObject _ceiling;
 
-    private Material _roomMaterial, _smallTileMaterial, _largeTileMaterial, _xLargeTileMaterial;
+    private static Material _roomMaterial, _smallTileMaterial, _largeTileMaterial, _xLargeTileMaterial;
 
     private List<GameObject> _spawnObjects;
 
@@ -43,7 +45,8 @@ public class Room : MonoBehaviour
 
     private List<GameObject> _drawGridObjects;
 
-    private GameObject _lightPrefab;
+
+    private List<GameObject> _doors = new List<GameObject>(1);
 
 
 
@@ -227,12 +230,22 @@ public class Room : MonoBehaviour
     // Start is called before the first frame update
     private void initReferences()
     {
-        _smallTileMaterial = Resources.Load<Material>("Materials/SmallTile");
-        _largeTileMaterial = Resources.Load<Material>("Materials/LargeTile");
-        _xLargeTileMaterial = Resources.Load<Material>("Materials/XLargeTile");
+        if(_smallTileMaterial == null)
+            _smallTileMaterial = Resources.Load<Material>("Materials/SmallTile");
 
-        _lightPrefab = Resources.Load<GameObject>("Prefabs/SpawnOptions/WallLight");
+        if (_largeTileMaterial == null)
+            _largeTileMaterial = Resources.Load<Material>("Materials/LargeTile");
+
+        if (_xLargeTileMaterial == null)
+            _xLargeTileMaterial = Resources.Load<Material>("Materials/XLargeTile");
+
+        if(_lightPrefab == null)
+            _lightPrefab = Resources.Load<GameObject>("Prefabs/SpawnOptions/WallLight");
+
+        if(_doorPrefab == null)
+            _doorPrefab = Resources.Load<GameObject>("Prefabs/Door");
     }
+
 
     // Update is called once per frame
     void Update()
@@ -273,9 +286,6 @@ public class Room : MonoBehaviour
         float startX = _floor.transform.position.x - _floor.transform.lossyScale.x / 2 + SMALL_GRID_SIZE / 2f;
         float startZ = _floor.transform.position.z - _floor.transform.localScale.z / 2 + SMALL_GRID_SIZE / 2f;
 
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        go.transform.position = new Vector3(startX, 0, startZ);
-
         for (int i = 0; i < lightCount; ++i)
         {
             Vector2Int randPos = wallsPos[(int)Random.Range(0, wallsPos.Count)];
@@ -295,6 +305,7 @@ public class Room : MonoBehaviour
 
             float rotation = getWallTileRotation(_smallSpawnGrid, randX, randY);
             lamp.transform.eulerAngles = new Vector3(lamp.transform.rotation.x, rotation, lamp.transform.rotation.z);
+            lamp.transform.SetParent(transform);
 
             Destroy(soFloor);
             Destroy(lamp.transform.Find("Wall1").gameObject);
@@ -330,7 +341,7 @@ public class Room : MonoBehaviour
         return getWall(wall_const);
     }
 
-    public void MakeDoorway(Vector2 side, float position)
+    public void MakeDoorway(Vector2 side, float position, bool makeDoor)
     {
         int wall_const = NORTH_WALL;
 
@@ -351,12 +362,14 @@ public class Room : MonoBehaviour
             wall_const = EAST_WALL;
         }
 
-        MakeDoorway(_walls[wall_const], position);
+        MakeDoorway(_walls[wall_const], position, makeDoor);
+
+
     }
 
-    public void MakeDoorway(int side, float position)
+    public void MakeDoorway(int side, float position, bool makeDoor)
     {
-        MakeDoorway(_walls[side], position);
+        MakeDoorway(_walls[side], position, makeDoor);
     }
 
     /*
@@ -365,7 +378,7 @@ public class Room : MonoBehaviour
      * Params: wall - The wall to add a doorway to.
      *         position - Relative wall position [0-1].
      */
-    private void MakeDoorway(GameObject wall, float position)
+    private void MakeDoorway(GameObject wall, float position, bool makeDoor)
     {
         GameObject top = GameObject.CreatePrimitive(PrimitiveType.Cube);
         top.layer = LayerMask.NameToLayer("Ground");
@@ -406,6 +419,20 @@ public class Room : MonoBehaviour
 
         scale = right.GetComponent<Renderer>().material.mainTextureScale;
         right.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * right.transform.lossyScale.z, scale.y * right.transform.lossyScale.y);
+
+        if (makeDoor)
+        {
+            GameObject door = Instantiate(_doorPrefab);
+            //door.transform.position = new Vector3(wall.transform.position.x,
+            //    wall.transform.position.y - wall.transform.lossyScale.y/2f + door.transform.lossyScale.y/2f, 
+            //    wall.transform.position.z);
+
+            door.transform.rotation = wall.transform.rotation;
+            door.transform.Rotate(0f, 90f, 0f);
+            door.transform.SetParent(wall.transform);
+            door.transform.localPosition = new Vector3(0f, -.5f + door.transform.localScale.y / 2f, 0f);
+            door.name = "Door";
+        }
 
         Destroy(wall.GetComponent<MeshRenderer>());
         Destroy(wall.GetComponent<BoxCollider>());
