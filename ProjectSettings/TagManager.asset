@@ -8,6 +8,7 @@ TagManager:
   - SpawnOptionX
   - SpawnOptionS
   - Draggable
+  - Delete
   layers:
   - Default
   - TransparentFX

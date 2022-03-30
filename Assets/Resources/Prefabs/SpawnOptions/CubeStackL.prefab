@@ -673,3 +673,4 @@ MonoBehaviour:
   probability: 0.1
   location: 2
   rotation: 0
+  maxPerRoom: 100

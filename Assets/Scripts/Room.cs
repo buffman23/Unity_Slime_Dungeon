@@ -376,39 +376,38 @@ public class Room : MonoBehaviour
         int length = grid.GetLength(0);
         int width = grid.GetLength(1);
 
-        // associate SpawnOption withs its position in spawnOptions list
-        Dictionary<SpawnOption, int> soIndexDict = new Dictionary<SpawnOption, int>(spawnOptions.Count * 2);
-
-        for(int i = 0; i < spawnOptions.Count; ++i)
-        {
-            soIndexDict.Add(spawnOptions[i], i);
-        }
-
         // create seperate lists for SpawnOptions by location type (CONRNER, WALL, CENTER, ANY)
         List<SpawnOption>[] optionLists = new List<SpawnOption>[4];
-        for(int i = 0; i < 4; ++i)
+        for (int i = 0; i < 4; ++i)
         {
             optionLists[i] = new List<SpawnOption>();
         }
 
-        
-        foreach(SpawnOption so in spawnOptions)
+        // associate SpawnOption withs its position in spawnOptions list
+        Dictionary<SpawnOption, int> soIndexDict = new Dictionary<SpawnOption, int>(spawnOptions.Count * 2);
+        Dictionary<SpawnOption, int> soMaxDict = new Dictionary<SpawnOption, int>(spawnOptions.Count * 2);
+
+        for (int i = 0; i < spawnOptions.Count; ++i)
         {
+            SpawnOption so = spawnOptions[i];
+            soIndexDict.Add(so, i);
+            soMaxDict.Add(so, so.maxPerRoom);
             optionLists[so.location].Add(so);
         }
+
+
 
         // center tile
         if ((length & 1) == 1 && (width & 1) == 1)
         {
             if (grid[length / 2, width / 2] == Room.EMPTY)
             {
-                foreach (SpawnOption so in optionLists[SpawnOption.CENTER])
+
+                SpawnOption so = pickSpawnOption(optionLists[SpawnOption.CENTER], soMaxDict);
+
+                if (so != null)
                 {
-                    float rand = Random.Range(0f, 1f);
-                    if (rand < so.probability)
-                    {
-                        grid[length / 2, width / 2] = soIndexDict[so];
-                    }
+                    grid[length / 2, width / 2] = soIndexDict[so];
                 }
             }
         }
@@ -420,32 +419,36 @@ public class Room : MonoBehaviour
         corners[2] = new Vector2Int(0, width - 1);
         corners[3] = new Vector2Int(length - 1, width - 1);
 
-        foreach(Vector2Int v in corners)
+        for (List<Vector2Int> cornersPos = new List<Vector2Int>(corners); cornersPos.Count > 0;)
         {
-            int i = v.x;
-            int j = v.y;
+            int randIdx = Random.Range(0, cornersPos.Count);
+            Vector2Int v = cornersPos[randIdx];
 
-            if (grid[i, j] != Room.EMPTY)
-                continue;
-
-
-            foreach (SpawnOption so in optionLists[SpawnOption.CORNER])
+            if (grid[v.x, v.y] != Room.EMPTY)
             {
-                float rand = Random.Range(0f, 1f);
-                if (rand < so.probability)
-                {
-                    grid[i, j] = soIndexDict[so];
-                }
+                cornersPos.RemoveAt(randIdx);
+                continue;
             }
+
+
+            SpawnOption so = pickSpawnOption(optionLists[SpawnOption.CORNER], soMaxDict);
+
+            if (so != null)
+            {
+                grid[v.x, v.y] = soIndexDict[so];
+            }
+
+            cornersPos.RemoveAt(randIdx);
         }
 
-        // wall tiles (inefficient but conside :P)
+        // wall tiles
+        List<Vector2Int> wallsPos = new List<Vector2Int>(grid.GetLength(0) * grid.GetLength(1));
         for (int i = 0; i < length; ++i)
         {
             for (int j = 0; j < width; ++j)
             {
                 // skip any non-wall tiles
-                if(i != 0 && i != length - 1)
+                if (i != 0 && i != length - 1)
                 {
                     if (j != 0 && j != width - 1)
                     {
@@ -453,37 +456,60 @@ public class Room : MonoBehaviour
                     }
                 }
 
-                if (grid[i, j] != Room.EMPTY)
-                    continue;
-
-                foreach (SpawnOption so in optionLists[SpawnOption.WALL])
-                {
-                    float rand = Random.Range(0f, 1f);
-                    if (rand < so.probability)
-                    {
-                        grid[i, j] = soIndexDict[so];
-                    }
-                }
+                wallsPos.Add(new Vector2Int(i, j));
             }
         }
 
+        while (wallsPos.Count > 0)
+        {
+            int randIdx = Random.Range(0, wallsPos.Count);
+            Vector2Int v = wallsPos[randIdx];
+
+            if (grid[v.x, v.y] != Room.EMPTY)
+            {
+                wallsPos.RemoveAt(randIdx);
+                continue;
+            }
+
+            SpawnOption so = pickSpawnOption(optionLists[SpawnOption.WALL], soMaxDict);
+
+            if (so != null)
+            {
+                grid[v.x, v.y] = soIndexDict[so];
+            }
+
+            wallsPos.RemoveAt(randIdx);
+        }
+
         // any tiles
+        List<Vector2Int> anyPos = new List<Vector2Int>(grid.GetLength(0) * grid.GetLength(1));
         for (int i = 0; i < length; ++i)
         {
             for (int j = 0; j < width; ++j)
             {
-                if (grid[i, j] != Room.EMPTY)
-                    continue;
-
-                foreach (SpawnOption so in optionLists[SpawnOption.ANY])
-                {
-                    float rand = Random.Range(0f, 1f);
-                    if (rand < so.probability)
-                    {
-                        grid[i, j] = soIndexDict[so];
-                    }
-                }
+                anyPos.Add(new Vector2Int(i, j));
             }
+        }
+
+        while (anyPos.Count > 0)
+        {
+            int randIdx = Random.Range(0, anyPos.Count);
+            Vector2Int v = anyPos[randIdx];
+
+            if (grid[v.x, v.y] != Room.EMPTY)
+            {
+                anyPos.RemoveAt(randIdx);
+                continue;
+            }
+
+            SpawnOption so = pickSpawnOption(optionLists[SpawnOption.ANY], soMaxDict);
+
+            if (so != null)
+            {
+                grid[v.x, v.y] = soIndexDict[so];
+            }
+
+            anyPos.RemoveAt(randIdx);
         }
 
         // take tiles on next smaller grid
@@ -509,6 +535,31 @@ public class Room : MonoBehaviour
                 grid[i, j] = Room.TAKEN;
             }
         }
+    }
+
+    private SpawnOption pickSpawnOption(List<SpawnOption> spawnOptions, Dictionary<SpawnOption, int> maxSpawnDict)
+    {
+        List<SpawnOption> spawnOptionsDup = new List<SpawnOption>(spawnOptions);
+
+        while(spawnOptionsDup.Count > 0)
+        {
+            int randIdx = (int)Random.Range(0, spawnOptionsDup.Count);
+            SpawnOption so = spawnOptionsDup[randIdx];
+
+            float rand = Random.Range(0f, 1f);
+            if (rand < so.probability)
+            {
+                if (--maxSpawnDict[so] == 0)
+                {
+                    spawnOptions.Remove(so);
+                }
+                return so;
+            }
+
+            spawnOptionsDup.RemoveAt(randIdx);
+        }
+
+        return null;
     }
 
     private void GenerateTiles(int[,] grid, float tileSize, List<SpawnOption> spawnOptions)

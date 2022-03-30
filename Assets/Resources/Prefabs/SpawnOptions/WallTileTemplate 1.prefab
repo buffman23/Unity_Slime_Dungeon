@@ -334,6 +334,7 @@ MonoBehaviour:
   probability: 0.01
   location: 1
   rotation: 0
+  maxPerRoom: 100
 --- !u!1001 &4675730464269543748
 PrefabInstance:
   m_ObjectHideFlags: 0

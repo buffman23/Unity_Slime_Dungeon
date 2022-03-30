@@ -147,6 +147,7 @@ MonoBehaviour:
   probability: 0.1
   location: 1
   rotation: 0
+  maxPerRoom: 100
 --- !u!1 &1859584105471910682
 GameObject:
   m_ObjectHideFlags: 0
