@@ -117,6 +117,11 @@ public class MapController : MonoBehaviour
             prevRoom = room;
         }
 
+        foreach(Room room in _rooms)
+        {
+            room.GenerateTiles();
+        }
+
         //setRoomGridsVisible(true);
     }
 

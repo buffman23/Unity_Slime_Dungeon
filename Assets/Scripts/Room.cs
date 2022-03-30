@@ -212,15 +212,6 @@ public class Room : MonoBehaviour
 
         initPresetSpawnOptions();
 
-        if (_xLargeSpawnGrid.GetLength(0) != 0 && _xLargeSpawnGrid.GetLength(1) != 0)
-            GenerateTileNums(_xLargeSpawnGrid, _largeSpawnGrid, xLargeSpawnOptions, XLARGE_GRID_SIZE/LARGE_GRID_SIZE);
-        GenerateTileNums(_largeSpawnGrid, null, largeSpawnOptions, LARGE_GRID_SIZE / SMALL_GRID_SIZE);
-        GenerateTileNums(_smallSpawnGrid, null, smallSpawnOptions, 1);
-
-        GenerateTiles(_xLargeSpawnGrid, XLARGE_GRID_SIZE, xLargeSpawnOptions);
-        GenerateTiles(_largeSpawnGrid, LARGE_GRID_SIZE, largeSpawnOptions);
-        GenerateTiles(_smallSpawnGrid, SMALL_GRID_SIZE, smallSpawnOptions);
-
         // Temportary testing code
         //MakeDoorway(_walls[NORTH_WALL], Random.Range(0f, 1f));
         //MakeDoorway(_walls[EAST_WALL], Random.Range(0f, 1f));
@@ -251,6 +242,18 @@ public class Room : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void GenerateTiles()
+    {
+        if (_xLargeSpawnGrid.GetLength(0) != 0 && _xLargeSpawnGrid.GetLength(1) != 0)
+            GenerateTileNums(_xLargeSpawnGrid, _largeSpawnGrid, xLargeSpawnOptions, XLARGE_GRID_SIZE / LARGE_GRID_SIZE);
+        GenerateTileNums(_largeSpawnGrid, null, largeSpawnOptions, LARGE_GRID_SIZE / SMALL_GRID_SIZE);
+        GenerateTileNums(_smallSpawnGrid, null, smallSpawnOptions, 1);
+
+        GenerateTiles(_xLargeSpawnGrid, XLARGE_GRID_SIZE, xLargeSpawnOptions);
+        GenerateTiles(_largeSpawnGrid, LARGE_GRID_SIZE, largeSpawnOptions);
+        GenerateTiles(_smallSpawnGrid, SMALL_GRID_SIZE, smallSpawnOptions);
     }
 
     private void initPresetSpawnOptions()
@@ -343,24 +346,40 @@ public class Room : MonoBehaviour
 
     public void MakeDoorway(Vector2 side, float position, bool makeDoor)
     {
+        int x = 0, y = 0;
         int wall_const = NORTH_WALL;
 
         if (side.x == 1)
         {
             wall_const = NORTH_WALL;
+
+            x = _largeSpawnGrid.GetLength(0) - 1;
+            y = _largeSpawnGrid.GetLength(1) / 2;
         }
         else if (side.x == -1)
         {
             wall_const = SOUTH_WALL;
+
+            x = 0;
+            y = _largeSpawnGrid.GetLength(1) / 2;
         }
         else if (side.y == 1)
         {
             wall_const = WEST_WALL;
+
+            x = _largeSpawnGrid.GetLength(0) / 2;
+            y = _largeSpawnGrid.GetLength(1) - 1;
         }
         else if (side.y == -1)
         {
             wall_const = EAST_WALL;
+
+            x = _largeSpawnGrid.GetLength(0) / 2;
+            y = 0;
+            
         }
+
+        _largeSpawnGrid[x, y] = Room.TAKEN;
 
         MakeDoorway(_walls[wall_const], position, makeDoor);
 
