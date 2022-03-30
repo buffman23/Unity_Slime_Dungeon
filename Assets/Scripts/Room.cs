@@ -31,6 +31,8 @@ public class Room : MonoBehaviour
 
     protected GameObject _floor;
 
+    protected GameObject[,] _floorTiles;
+
     protected GameObject _ceiling;
 
     private Material _roomMaterial, _smallTileMaterial, _largeTileMaterial, _xLargeTileMaterial;
@@ -53,13 +55,66 @@ public class Room : MonoBehaviour
 
         _roomMaterial = Resources.Load<Material>("materials/Room");
 
-        _floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        _floor.transform.SetParent(transform);
-        _floor.transform.localPosition = new Vector3(0, 0, 0);
-        _floor.transform.localScale = new Vector3(size.x, wallThickness, size.z);
-        _floor.name = transform.gameObject.name + "_floor";
-        _floor.GetComponent<Renderer>().material = _roomMaterial;
-        _floor.layer = LayerMask.NameToLayer("Ground");
+        Vector2 scale;
+
+        if (this is Hallway)
+        {
+            _floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            _floor.transform.SetParent(transform);
+            _floor.transform.localPosition = new Vector3(0, 0, 0);
+            _floor.transform.localScale = new Vector3(size.x, wallThickness, size.z);
+            _floor.name = transform.gameObject.name + "_floor";
+            _floor.GetComponent<Renderer>().material = _roomMaterial;
+            scale = _floor.GetComponent<Renderer>().material.mainTextureScale;
+            _floor.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * _floor.transform.lossyScale.x,
+                scale.y * _floor.transform.lossyScale.z);
+            _floor.layer = LayerMask.NameToLayer("Ground");
+        }
+        else
+        {
+            _floor = new GameObject();
+            _floor.transform.SetParent(transform);
+            _floor.transform.localScale = new Vector3(size.x, wallThickness, size.z);
+            _floor.transform.localPosition = new Vector3(0, 0, 0);
+            _floor.name = transform.gameObject.name + "_floor";
+
+            GameObject floorTilePrefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //floorTilePrefab.transform.SetParent(transform);
+            floorTilePrefab.transform.localPosition = new Vector3(0, 0, 0);
+            floorTilePrefab.transform.localScale = new Vector3(LARGE_GRID_SIZE, wallThickness, LARGE_GRID_SIZE);
+            floorTilePrefab.name = transform.gameObject.name + "_floor";
+            floorTilePrefab.GetComponent<Renderer>().material = _roomMaterial;
+            floorTilePrefab.layer = LayerMask.NameToLayer("Ground");
+
+            floorTilePrefab.GetComponent<Renderer>().material = _roomMaterial;
+            scale = floorTilePrefab.GetComponent<Renderer>().material.mainTextureScale;
+            floorTilePrefab.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * floorTilePrefab.transform.lossyScale.x,
+                scale.y * floorTilePrefab.transform.lossyScale.z);
+            floorTilePrefab.layer = LayerMask.NameToLayer("Ground");
+
+            float startX = _floor.transform.position.x - size.x / 2 + LARGE_GRID_SIZE / 2;
+            float startZ = _floor.transform.position.z - size.z / 2 + LARGE_GRID_SIZE / 2;
+
+            _floorTiles = new GameObject[(int)size.x / LARGE_GRID_SIZE, (int)size.z / LARGE_GRID_SIZE];
+            for (int i = 0; i < size.x / LARGE_GRID_SIZE; ++i)
+            {
+                for (int j = 0; j < size.z / LARGE_GRID_SIZE; ++j)
+                {
+                    GameObject floorTile = GameObject.Instantiate(floorTilePrefab);
+                    floorTile.transform.position = new Vector3(startX + LARGE_GRID_SIZE * i, 0f, startZ + LARGE_GRID_SIZE * j);
+                    floorTile.transform.SetParent(_floor.transform);
+                    floorTile.name = transform.gameObject.name + "_floorTile(" + i + ',' + j + ')';
+
+                    _floorTiles[i, j] = floorTile;
+                }
+            }
+
+            Destroy(floorTilePrefab);
+        }
+
+        
+
+        
 
         _ceiling = GameObject.CreatePrimitive(PrimitiveType.Cube);
         _ceiling.transform.SetParent(transform);
@@ -67,6 +122,9 @@ public class Room : MonoBehaviour
         _ceiling.transform.localScale = new Vector3(size.x, wallThickness, size.z);
         _ceiling.name = transform.gameObject.name + "_ceiling";
         _ceiling.GetComponent<Renderer>().material = _roomMaterial;
+        scale = _ceiling.GetComponent<Renderer>().material.mainTextureScale;
+        _ceiling.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * _ceiling.transform.lossyScale.x,
+            scale.y * _ceiling.transform.lossyScale.z);
         Destroy(_ceiling.GetComponent<BoxCollider>());
 
         GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -100,9 +158,12 @@ public class Room : MonoBehaviour
         wall.name = transform.gameObject.name + "_WestWall";
         _walls[WEST_WALL] = wall;
 
+        
         foreach (GameObject w in _walls)
         {
             w.GetComponent<Renderer>().material = _roomMaterial;
+            scale = w.GetComponent<Renderer>().material.mainTextureScale;
+            w.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * w.transform.lossyScale.z, scale.y * w.transform.lossyScale.y);
             w.layer = LayerMask.NameToLayer("Ground");
         }
 
@@ -250,7 +311,7 @@ public class Room : MonoBehaviour
         top.GetComponent<Renderer>().material = _roomMaterial;
 
         Vector2 scale = top.GetComponent<Renderer>().material.mainTextureScale;
-        top.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * top.transform.localScale.z, scale.y * top.transform.localScale.y);
+        top.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * top.transform.lossyScale.z, scale.y * top.transform.lossyScale.y);
 
 
         GameObject left = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -264,7 +325,7 @@ public class Room : MonoBehaviour
         left.GetComponent<Renderer>().material = _roomMaterial;
 
         scale = left.GetComponent<Renderer>().material.mainTextureScale;
-        left.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * left.transform.localScale.z, scale.y * left.transform.localScale.y);
+        left.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * left.transform.lossyScale.z, scale.y * left.transform.lossyScale.y);
 
         GameObject right = GameObject.CreatePrimitive(PrimitiveType.Cube);
         right.transform.localScale = new Vector3(wallThickness, wall.transform.localScale.y - topHeight,
@@ -277,7 +338,7 @@ public class Room : MonoBehaviour
         right.GetComponent<Renderer>().material = _roomMaterial;
 
         scale = right.GetComponent<Renderer>().material.mainTextureScale;
-        right.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * right.transform.localScale.z, scale.y * right.transform.localScale.y);
+        right.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * right.transform.lossyScale.z, scale.y * right.transform.lossyScale.y);
 
         Destroy(wall.GetComponent<MeshRenderer>());
         Destroy(wall.GetComponent<BoxCollider>());
@@ -476,7 +537,12 @@ public class Room : MonoBehaviour
                 float yPos = _floor.transform.position.y + _floor.transform.localScale.y / 2 - soFloor.transform.localScale.y/2;
                 so.transform.position = new Vector3(startX + tileSize * i, yPos, startZ + tileSize * j);
 
-                if (so.rotation == SpawnOption.SQUARE_ROTATION) {
+                if (soFloor.tag.Equals("Delete"))
+                {
+                    Destroy(_floorTiles[i, j]);
+                }
+
+                if (so.rotation == SpawnOption.ANY_ROTATION) {
                     float randRotation = UnityEngine.Random.Range(0f, 359f);
                     so.transform.eulerAngles = new Vector3(so.transform.rotation.x, randRotation, so.transform.rotation.z);
                 } else if(so.rotation == SpawnOption.SQUARE_ROTATION)
@@ -498,8 +564,8 @@ public class Room : MonoBehaviour
                     }
                     else
                     {
-                        float randRotation = UnityEngine.Random.Range(0f, 359f);
-                        so.transform.eulerAngles = new Vector3(so.transform.rotation.x, randRotation, so.transform.rotation.z);
+                        //float randRotation = UnityEngine.Random.Range(0f, 359f);
+                        //so.transform.eulerAngles = new Vector3(so.transform.rotation.x, randRotation, so.transform.rotation.z);
                     }
                 }
 
