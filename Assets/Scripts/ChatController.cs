@@ -27,6 +27,7 @@ public class ChatController : MonoBehaviour
     private GameObject _player;
     private Vector2 _defaultPlayerSpeed;
     private float _defaultPlayerJump;
+    private GameObject _keyPrefab;
 
     private bool _chatOpen = false;
 
@@ -66,6 +67,7 @@ public class ChatController : MonoBehaviour
         _mapController = GameObject.Find("MapController").GetComponent<MapController>();
         _animator = _chat.GetComponent<Animator>();
         _chatTextPrefab = Resources.Load<GameObject>("Prefabs/ChatText");
+        _keyPrefab = Resources.Load<GameObject>("Prefabs/Key");
     }
 
     // Update is called once per frame
@@ -344,6 +346,20 @@ public class ChatController : MonoBehaviour
                 }
                 break;
 
+            case "key":
+                objectName = "Key";
+                if (split.Length > 1)
+                    float.TryParse(split[1], out scale);
+
+                GameObject key = Instantiate(_keyPrefab);
+                key.name = objectName;
+                key.layer = LayerMask.NameToLayer("Ground");
+
+                spawn_position = _player.transform.position + _player.transform.forward;
+                key.transform.position = spawn_position;
+                key.transform.rotation = _player.transform.rotation;
+                write("Spawned a " + split[0] + '.');
+                break;
             default:
                 write("Invalid command \"" + command + '\"');
                 break;
