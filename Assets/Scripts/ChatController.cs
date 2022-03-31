@@ -13,7 +13,7 @@ using TMPro;
 public class ChatController : MonoBehaviour
 {
 
-
+    public static ChatController instance;
     private GameObject _chat;
     private InputField _inputField;
     private Text _outputText;
@@ -41,6 +41,15 @@ public class ChatController : MonoBehaviour
 
         _defaultPlayerSpeed = new Vector2(_playerController.walkSpeed, _playerController.runSpeed);
         _defaultPlayerJump = _playerController.jumpHeight;
+
+        if(ChatController.instance == null)
+        {
+            ChatController.instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
     }
 
     private void InitReferences()

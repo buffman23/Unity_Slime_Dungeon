@@ -29,6 +29,8 @@ public class Door : MonoBehaviour
 
     private Animator _animator;
 
+    private Quaternion _destinationRotation;
+
     
 
     // Start is called before the first frame update
@@ -55,6 +57,15 @@ public class Door : MonoBehaviour
                 _destination = _keyholeTrans.position;
             }
 
+            if(_rotate && _rotationReady)
+            {
+                _insertReady = false;
+                Destroy(_keyRB);
+                _key.transform.SetParent(transform.Find("Armature"));
+                _openDoor = true;
+                _animator.SetBool("OpenDoor", true);
+            }
+
             Vector3 deltaVec = _destination - _key.transform.position;
 
             
@@ -62,28 +73,23 @@ public class Door : MonoBehaviour
             if (deltaVec.magnitude > .1)
             {
                 _keyRB.useGravity = false;
-                PlayerController.instance.dragDebounce = false;
                 Vector3 distVec = (_destination - _key.transform.position);
 
                 Vector3 objAcc = _keyRB.velocity;
                 Vector3 forceVector = (distVec * tryForce - objAcc);
 
-                Debug.Log("Adding force" + forceVector.magnitude);
-
-
                 _keyRB.AddForce(forceVector, ForceMode.VelocityChange);
 
                 _orientationReady = false;
-            } else
+            } 
+            else
             {
+                _keyRB.velocity = Vector3.zero;
                 if (_inserting)
                 {
-                    _insertReady = false;
+                    //_insertReady = false;
                     _rotate = true;
-                    Destroy(_keyRB);
-                    _key.transform.SetParent(transform.Find("Armature"));
-                    _openDoor = true;
-                    _animator.SetBool("OpenDoor", true);
+                    _destinationRotation = _keyholeTrans.rotation * Quaternion.Euler(0f, 0f, 270);
                     //this.enabled = false;
                 }
                 _orientationReady = true;
@@ -93,7 +99,7 @@ public class Door : MonoBehaviour
              * SOURCE : https://gamedev.stackexchange.com/questions/182850/rotate-rigidbody-to-face-away-from-camera-with-addtorque
              */
             // Compute the change in orientation we need to impart.
-            Quaternion rotationChange = _keyholeTrans.rotation * Quaternion.Inverse(_keyRB.rotation);
+            Quaternion rotationChange = _destinationRotation * Quaternion.Inverse(_keyRB.rotation);
 
             // Convert to an angle-axis representation, with angle in range -180...180
             rotationChange.ToAngleAxis(out float angle, out Vector3 axis);
@@ -146,6 +152,8 @@ public class Door : MonoBehaviour
             //_keyRB.freezeRotation = true;
             _key.transform.SetParent(null);
             _destination = _keyholeTrans.position - _keyholeTrans.forward * .7f;
+            _destinationRotation = _keyholeTrans.rotation * Quaternion.Euler(0f, 0f, 180f);
+            _key.tag = "Untagged";
 
             PlayerController.instance.DropDrag();
 
