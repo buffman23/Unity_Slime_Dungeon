@@ -5,12 +5,14 @@ YoutTube Tutorials:
   - player movement: https://www.youtube.com/watch?v=_QajrabyTJc&t=848s
   - blender rigging tutorial: https://www.youtube.com/watch?v=XkiWBSSuxLw
   - animator setup: https://www.youtube.com/watch?v=vApG8aYD5aI
+  - animtation layers and masks: https://www.youtube.com/watch?v=-SAnr8-Xfgg
   - Adobe Substance 3D Painter export: https://www.youtube.com/watch?v=_4ULQ95njmQ
   - Adobe Substance 3D Painter masking: https://www.youtube.com/watch?v=_j27AS0VQOw
   - Adobe Substance 3D Painter intro: https://www.youtube.com/watch?v=mv6pg1O9vEQ&t
 
 Animations:
  - https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271
+ 
 
 Other:
  - Adobe Substance 3D painter used for texturing door

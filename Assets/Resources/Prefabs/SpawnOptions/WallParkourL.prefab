@@ -144,7 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 538a564126100c147bed6dd14e7eeafe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  probability: 1
+  probability: 0.1
   location: 1
   rotation: 0
   maxPerRoom: 100

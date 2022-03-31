@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     public static float headRaycastOffset;
     public float dragDistance;
 
+    public static PlayerController instance;
+
     public float dragForce;
 
     public float walkSpeed;
@@ -26,6 +28,8 @@ public class PlayerController : MonoBehaviour
     public float mouseSensitivity;
 
     public bool fly = false;
+
+    public bool dragDebounce;
 
     public Transform groudCheck;
 
@@ -71,6 +75,8 @@ public class PlayerController : MonoBehaviour
 
     private Quaternion _lastUpdateRotate;
 
+    private bool _previousGravity;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -84,6 +90,15 @@ public class PlayerController : MonoBehaviour
         _braceLandDistance = -gravity * Time.fixedDeltaTime * 10;
 
         _savedStepOffset = _characterController.stepOffset;
+
+        if(PlayerController.instance == null)
+        {
+            PlayerController.instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
     }
 
     private void InitReferences()
@@ -203,61 +218,70 @@ public class PlayerController : MonoBehaviour
         // right click
         if (Input.GetMouseButton(1))
         {
-            if (_draggedObject == null)
+            if (dragDebounce)
             {
-                var raycastResult = PlayerController.getLookRay();
-                bool hitSomething = raycastResult.Item1;
-                if (!hitSomething)
-                    return;
+                if (_draggedObject == null)
+                {
+                    var raycastResult = PlayerController.getLookRay();
+                    bool hitSomething = raycastResult.Item1;
+                    if (!hitSomething)
+                        return;
 
-                RaycastHit hit = raycastResult.Item2;
-               
-                if (hit.transform.gameObject.tag != "Draggable")
-                    return;
+                    RaycastHit hit = raycastResult.Item2;
 
-                _draggedObject = hit.transform.gameObject;
+                    if (hit.transform.gameObject.tag != "Draggable")
+                        return;
 
-                _draggedObjectRB = _draggedObject.GetComponent<Rigidbody>();
-                _draggedObjectRB.useGravity = false;
-                _draggedObjectRB.freezeRotation = true;
+                    _draggedObject = hit.transform.gameObject;
+
+                    _draggedObjectRB = _draggedObject.GetComponent<Rigidbody>();
+                    _previousGravity = _draggedObjectRB.useGravity;
+                    _draggedObjectRB.useGravity = false;
+                    _draggedObjectRB.freezeRotation = true;
+                }
+
+                _dragDestination = Camera.main.transform.position + Camera.main.transform.forward * dragDistance;
+                //_dragDestination += _dragDestination.normalized * _draggedObject.transform.lossyScale.magnitude/2;
+                Vector3 objPos = _draggedObject.transform.position;
+                Vector3 distVec = (_dragDestination - _draggedObject.transform.position);
+
+                //float multipier = distVec.magnitude - _draggedObjectRB.velocity.magnitude;
+
+                Vector3 objAcc = _draggedObjectRB.velocity;
+                Vector3 forceVector = (distVec * dragForce - objAcc);
+                //Vector3 forceVector = (distVec * distVec.magnitude  - objAcc.normalized * objAcc.magnitude * objAcc.magnitude) * dragForce;
+                /*
+                if (distVec.magnitude > .1f)
+                {
+                    forceVector =  - ;
+                }
+                else
+                {
+                    forceVector = - _draggedObjectRB.velocity;
+                }*/
+
+                _draggedObjectRB.AddForce(forceVector, ForceMode.VelocityChange);
+                //_draggedObjectRB.AddTorque(_draggedObjectRB.rotation.eulerAngles * _draggedObjectRB.mass * Time.deltaTime);
             }
-            Vector3 a = Camera.main.transform.position;
-            Vector3 b = Camera.main.transform.forward;
-            Vector3 c = Camera.main.transform.forward * dragDistance;
-            _dragDestination = Camera.main.transform.position + Camera.main.transform.forward * dragDistance;
-            //_dragDestination += _dragDestination.normalized * _draggedObject.transform.lossyScale.magnitude/2;
-            Vector3 objPos = _draggedObject.transform.position;
-            Vector3 distVec = (_dragDestination - _draggedObject.transform.position);
-
-            //float multipier = distVec.magnitude - _draggedObjectRB.velocity.magnitude;
-
-            Vector3 objAcc = _draggedObjectRB.velocity ;
-            Vector3 forceVector = (distVec * dragForce - objAcc);
-            //Vector3 forceVector = (distVec * distVec.magnitude  - objAcc.normalized * objAcc.magnitude * objAcc.magnitude) * dragForce;
-            /*
-            if (distVec.magnitude > .1f)
-            {
-                forceVector =  - ;
-            }
-            else
-            {
-                forceVector = - _draggedObjectRB.velocity;
-            }*/
-
-            _draggedObjectRB.AddForce(forceVector, ForceMode.VelocityChange);
-            //_draggedObjectRB.AddTorque(_draggedObjectRB.rotation.eulerAngles * _draggedObjectRB.mass * Time.deltaTime);
-
         }
         else
         {
+            dragDebounce = true;
             if (_draggedObject != null)
             {
-                _draggedObjectRB.useGravity = true;
+                _draggedObjectRB.useGravity = _previousGravity;
                 _draggedObjectRB.freezeRotation = false;
                 _draggedObjectRB = null;
                 _draggedObject = null;
             }
         }
+    }
+
+    public void DropDrag()
+    {
+        dragDebounce = true;
+        _draggedObject = null;
+        _draggedObjectRB = null;
     }
 
     private void LateUpdate()

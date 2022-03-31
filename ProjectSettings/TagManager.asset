@@ -9,6 +9,8 @@ TagManager:
   - SpawnOptionS
   - Draggable
   - Delete
+  - Key
+  - PassThru
   layers:
   - Default
   - TransparentFX

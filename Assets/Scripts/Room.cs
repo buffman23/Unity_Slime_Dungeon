@@ -344,6 +344,7 @@ public class Room : MonoBehaviour
         return getWall(wall_const);
     }
 
+
     public void MakeDoorway(Vector2 side, float position, bool makeDoor)
     {
         int x = 0, y = 0;
@@ -446,10 +447,11 @@ public class Room : MonoBehaviour
             //    wall.transform.position.y - wall.transform.lossyScale.y/2f + door.transform.lossyScale.y/2f, 
             //    wall.transform.position.z);
 
+            Transform doorChild = door.transform.Find("Cube");
             door.transform.rotation = wall.transform.rotation;
             door.transform.Rotate(0f, 90f, 0f);
             door.transform.SetParent(wall.transform);
-            door.transform.localPosition = new Vector3(0f, -.5f + door.transform.localScale.y / 2f, 0f);
+            door.transform.localPosition = new Vector3(0f, -.5f + (doorChild.localScale.y * door.transform.localScale.y)/2f, 0f);
             door.name = "Door";
         }
 
