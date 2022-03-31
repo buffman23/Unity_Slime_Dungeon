@@ -9,6 +9,8 @@ YoutTube Tutorials:
   - Adobe Substance 3D Painter export: https://www.youtube.com/watch?v=_4ULQ95njmQ
   - Adobe Substance 3D Painter masking: https://www.youtube.com/watch?v=_j27AS0VQOw
   - Adobe Substance 3D Painter intro: https://www.youtube.com/watch?v=mv6pg1O9vEQ&t
+  - How to make UV map Blender: https://www.youtube.com/watch?v=AnRQhH3fEDY
+  - How to attach weapon to player hand: https://www.youtube.com/watch?v=S_USClc_r5c
 
 Animations:
  - https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271
