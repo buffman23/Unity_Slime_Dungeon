@@ -70,7 +70,7 @@ public class Door : MonoBehaviour
 
             
 
-            if (deltaVec.magnitude > .1)
+            if (deltaVec.magnitude > .05)
             {
                 _keyRB.useGravity = false;
                 Vector3 distVec = (_destination - _key.transform.position);
@@ -160,9 +160,13 @@ public class Door : MonoBehaviour
             _insertReady = true;
 
             Collider collider1 = transform.Find("Armature").GetComponent<Collider>();
-            Collider collider2 = _key.transform.GetComponent<Collider>();
+            foreach (Collider collider2 in _key.transform.GetComponents<Collider>())
+            {
+                Physics.IgnoreCollision(collider1, collider2);
+            }
+            
 
-            Physics.IgnoreCollision(collider1, collider2);
+           
 
 
         }
