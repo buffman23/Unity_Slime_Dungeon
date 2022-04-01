@@ -25,6 +25,6 @@ public class SpawnOption : MonoBehaviour
     public int location; // location in room this GameObject will be places. Not x,y coordinates, but tile type.
     public int rotation;
     public int maxPerRoom; // max spawns per room(
-    public bool includeInTilePool = true; 
+    public bool includeInTilePool = true;
 }
 

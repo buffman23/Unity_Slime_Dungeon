@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -67,7 +68,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 _dragDestination;
 
-    private GameObject _draggedObject;
+    private GameObject _draggedObject, _highlight;
 
     private Rigidbody _draggedObjectRB;
 
@@ -269,10 +270,7 @@ public class PlayerController : MonoBehaviour
             dragDebounce = true;
             if (_draggedObject != null)
             {
-                _draggedObjectRB.useGravity = _previousGravity;
-                _draggedObjectRB.freezeRotation = false;
-                _draggedObjectRB = null;
-                _draggedObject = null;
+                DropDrag();
             }
         }
     }
@@ -280,8 +278,14 @@ public class PlayerController : MonoBehaviour
     public void DropDrag()
     {
         dragDebounce = true;
-        _draggedObject = null;
+        if (_draggedObjectRB != null)
+        {
+            _draggedObjectRB.useGravity = _previousGravity;
+            _draggedObjectRB.freezeRotation = false;
+        }
         _draggedObjectRB = null;
+        _draggedObject = null;
+        Destroy(_highlight);
     }
 
     private void LateUpdate()

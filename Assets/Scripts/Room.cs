@@ -21,13 +21,15 @@ public class Room : MonoBehaviour
 
     public Vector2 doorwayDimensions = new Vector2(3f, 4f);
 
+    public static float keyFloorSpawnChance = 1/3f;
+
     public static float wallThickness = 1f;
 
     public const int NORTH_WALL = 0, EAST_WALL = 1, SOUTH_WALL = 2, WEST_WALL = 3;
 
     public const int NE_CORNER = 0, SE_CORNER = 1, SW_CORNER = 2, NW_CORNER = 3;
 
-    private static GameObject _lightPrefab, _doorPrefab;
+    private static GameObject _lightPrefab, _doorPrefab, _keyPrefab;
 
     private GameObject[] _walls = new GameObject[4];
 
@@ -47,6 +49,8 @@ public class Room : MonoBehaviour
 
 
     private List<GameObject> _doors = new List<GameObject>(1);
+
+    private List<SpawnOption> _sosWithKey = new List<SpawnOption>(16);
 
 
 
@@ -235,6 +239,9 @@ public class Room : MonoBehaviour
 
         if(_doorPrefab == null)
             _doorPrefab = Resources.Load<GameObject>("Prefabs/Door");
+
+        if (_keyPrefab == null)
+            _keyPrefab = Resources.Load<GameObject>("Prefabs/Key");
     }
 
 
@@ -254,6 +261,8 @@ public class Room : MonoBehaviour
         GenerateTiles(_xLargeSpawnGrid, XLARGE_GRID_SIZE, xLargeSpawnOptions);
         GenerateTiles(_largeSpawnGrid, LARGE_GRID_SIZE, largeSpawnOptions);
         GenerateTiles(_smallSpawnGrid, SMALL_GRID_SIZE, smallSpawnOptions);
+
+        GenerateKey(_sosWithKey);
     }
 
     private void initPresetSpawnOptions()
@@ -737,6 +746,12 @@ public class Room : MonoBehaviour
 
                 StripTemplateObjets(so);
 
+                if(so.transform.Find("Key") != null)
+                {
+                    _sosWithKey.Add(so);
+                }
+
+
                 so.transform.parent = this.transform;
                 //so.GetComponent<SpawnOption>().enabled = false;
 
@@ -744,6 +759,39 @@ public class Room : MonoBehaviour
                 //cube.transform.SetParent(_floor.transform);
                 //drawnTiles.Add(cube);
             }
+        }
+    }
+
+    // assumes all SpawnOptions in list have keys
+    private void GenerateKey(List<SpawnOption> spawnOptions)
+    {
+        float floorSpawnRoll = Random.value;
+        // pick random SpawnOption with key to keep key. Rest get key removed.
+        if (spawnOptions.Count > 0 && keyFloorSpawnChance < floorSpawnRoll)
+        {
+            int randIdx = (int)Random.Range(0, spawnOptions.Count);
+            spawnOptions.RemoveAt(randIdx);
+        }
+        else
+        {
+            GameObject key = Instantiate(_keyPrefab);
+            
+
+            float lengthHalf = size.x / 2f - key.transform.lossyScale.x / 2f;
+            float widthHalf = size.z / 2f - key.transform.lossyScale.z / 2f;
+            //float heightHalf = size.y / 2f - wallThickness / 2f - key.transform.lossyScale.y / 2f;
+            key.transform.position = transform.position;
+            key.transform.position += new Vector3(Random.Range(-lengthHalf, lengthHalf), transform.position.y + size.y/2f, Random.Range(-widthHalf, widthHalf));
+            key.transform.rotation = Quaternion.Euler(Random.value * 360f, Random.value * 360f, Random.value * 360f);
+            key.transform.SetParent(transform);
+            key.name = "Key";
+        }
+
+        foreach (SpawnOption so in spawnOptions)
+        {
+            Transform keyTrans = so.transform.Find("Key");
+            if (keyTrans)
+                Destroy(keyTrans.gameObject);
         }
     }
 
