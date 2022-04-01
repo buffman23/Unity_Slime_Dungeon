@@ -10,7 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 _dragDestination;
 
-    private GameObject _draggedObject, _highlight;
+    private GameObject _draggedObject, _highlightedObj;
 
     private Rigidbody _draggedObjectRB;
 
@@ -77,6 +77,8 @@ public class PlayerController : MonoBehaviour
     private Quaternion _lastUpdateRotate;
 
     private bool _previousGravity;
+
+    private Image _draggableHighlight;
 
     // Start is called before the first frame update
     void Start()
@@ -109,6 +111,8 @@ public class PlayerController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _neckTrans = transform.Find("PlayerRig/Armature/Hips/Spine/Chest/UpperChest/Neck").transform;
         _headTrans = _neckTrans.Find("Head");
+
+        _draggableHighlight = GameObject.Find("DraggableHighlight").GetComponent<Image>();
     }
 
     // Update is called once per frame
@@ -216,6 +220,25 @@ public class PlayerController : MonoBehaviour
 
     private void updateDrag()
     {
+        var raycastResult = PlayerController.getLookRay();
+        bool hitSomething = raycastResult.Item1;
+
+        RaycastHit hit = raycastResult.Item2;
+
+        if (hit.transform != null && hit.transform.gameObject.tag == "Draggable")
+        {
+            _highlightedObj = hit.transform.gameObject;
+
+            if (_draggedObject == null)
+                _draggableHighlight.enabled = true;
+            else
+                _draggableHighlight.enabled = false;
+        }
+        else
+        {
+            _draggableHighlight.enabled = false;
+        }
+            
         // right click
         if (Input.GetMouseButton(1))
         {
@@ -223,12 +246,9 @@ public class PlayerController : MonoBehaviour
             {
                 if (_draggedObject == null)
                 {
-                    var raycastResult = PlayerController.getLookRay();
-                    bool hitSomething = raycastResult.Item1;
+
                     if (!hitSomething)
                         return;
-
-                    RaycastHit hit = raycastResult.Item2;
 
                     if (hit.transform.gameObject.tag != "Draggable")
                         return;
@@ -285,7 +305,6 @@ public class PlayerController : MonoBehaviour
         }
         _draggedObjectRB = null;
         _draggedObject = null;
-        Destroy(_highlight);
     }
 
     private void LateUpdate()
