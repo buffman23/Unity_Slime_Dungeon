@@ -262,7 +262,10 @@ public class Room : MonoBehaviour
         GenerateTiles(_largeSpawnGrid, LARGE_GRID_SIZE, largeSpawnOptions);
         GenerateTiles(_smallSpawnGrid, SMALL_GRID_SIZE, smallSpawnOptions);
 
-        GenerateKey(_sosWithKey);
+        for (int i = 0; i < _doors.Count; ++i)
+        {
+            GenerateKey(_sosWithKey);
+        }
     }
 
     private void initPresetSpawnOptions()
@@ -462,6 +465,7 @@ public class Room : MonoBehaviour
             door.transform.SetParent(wall.transform);
             door.transform.localPosition = new Vector3(0f, -.5f + (doorChild.localScale.y * door.transform.localScale.y)/2f, 0f);
             door.name = "Door";
+            _doors.Add(door);
         }
 
         Destroy(wall.GetComponent<MeshRenderer>());
