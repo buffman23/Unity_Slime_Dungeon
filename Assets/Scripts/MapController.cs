@@ -13,6 +13,8 @@ using UnityEngine.AI;
 
 public class MapController : MonoBehaviour
 {
+    public static MapController instance;
+
     private Room _roomPrefab;
     private Hallway _hallwayPrefab;
 
@@ -41,11 +43,16 @@ public class MapController : MonoBehaviour
 
     private Vector2Int gridPositionDelta = Vector2Int.zero;
 
-    private NavMeshSurface _surface;
+
+    public NavMeshSurface surface;
 
     // Start is called before the first frame update
+
     void Start()
     {
+        if (instance == null)
+            instance = this;
+
         InitReferences();
 
         InitRoomSpawnOptions();
@@ -159,7 +166,7 @@ public class MapController : MonoBehaviour
     }
     public void HandleDoorOpened()
     {
-        _surface.BuildNavMesh();
+        surface.BuildNavMesh();
         Debug.Log("Door opened handled");
     }
 
@@ -168,7 +175,7 @@ public class MapController : MonoBehaviour
         _roomPrefab = Resources.Load<Room>("Prefabs/Room");
         _hallwayPrefab = Resources.Load<Hallway>("Prefabs/Hallway");
         _player = PlayerController.instance;
-        _surface = gameObject.AddComponent<NavMeshSurface>();
+        surface = gameObject.AddComponent<NavMeshSurface>();
     }
 
     private void InitRoomSpawnOptions()
@@ -385,7 +392,7 @@ public class MapController : MonoBehaviour
                 _activeRooms = newActiveRooms;
 
                 // rebuild nav mesh for active rooms
-                _surface.BuildNavMesh();
+                surface.BuildNavMesh();
             }
         }
     }

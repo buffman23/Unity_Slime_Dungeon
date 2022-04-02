@@ -49,12 +49,15 @@ public class Room : MonoBehaviour
 
     private static Material _roomMaterial, _smallTileMaterial, _largeTileMaterial, _xLargeTileMaterial;
 
-    private List<GameObject> _spawnObjects;
+    private List<GameObject> _spawnObjects = new List<GameObject>();
+
+    private List<Enemy> _enemies = new List<Enemy>();
 
     private int[,] _smallSpawnGrid, _largeSpawnGrid, _xLargeSpawnGrid;
 
     private List<GameObject> _drawGridObjects;
 
+    private BoxCollider _roomCollider;
 
     private List<Door> _doors = new List<Door>(1);
 
@@ -63,6 +66,9 @@ public class Room : MonoBehaviour
     public const int SMALL_GRID_SIZE = 1,  LARGE_GRID_SIZE = 8,  XLARGE_GRID_SIZE = 16;
 
     public const int EMPTY = -1, TAKEN = -2, FOO = -3;
+
+    private bool _playerEntered = false;
+
 
     private void Awake()
     {
@@ -128,9 +134,9 @@ public class Room : MonoBehaviour
             Destroy(floorTilePrefab);
         }
 
-        
-
-        
+        _roomCollider.size = this.size;
+        _roomCollider.center = new Vector3(0f, this.size.y/2f, 0f);
+        _roomCollider.isTrigger = true;
 
         _ceiling = GameObject.CreatePrimitive(PrimitiveType.Cube);
         _ceiling.transform.SetParent(transform);
@@ -250,6 +256,21 @@ public class Room : MonoBehaviour
 
         if (_keyPrefab == null)
             _keyPrefab = Resources.Load<GameObject>("Prefabs/Key");
+
+        _roomCollider = gameObject.AddComponent<BoxCollider>();
+
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!_playerEntered && other.gameObject.name.Equals("Player"))
+        {
+            Debug.Log("Player Entered " + this.name);
+            foreach (Enemy enemy in _enemies)
+            {
+                enemy.gameObject.SetActive(true);
+            }
+        }
     }
 
 
@@ -408,8 +429,6 @@ public class Room : MonoBehaviour
         _largeSpawnGrid[x, y] = Room.TAKEN;
 
         MakeDoorway(_walls[wall_const], position, makeDoor);
-
-
     }
 
     public void MakeDoorway(int side, float position, bool makeDoor)
@@ -772,6 +791,15 @@ public class Room : MonoBehaviour
 
 
                 so.transform.parent = this.transform;
+
+                _spawnObjects.Add(so.gameObject);
+                Enemy enemy = so.gameObject.GetComponentInChildren<Enemy>();
+                if (enemy != null)
+                {
+                    Debug.Log("Enemy not null");
+                    _enemies.Add(enemy);
+                    enemy.gameObject.SetActive(false);
+                }
                 //so.GetComponent<SpawnOption>().enabled = false;
 
                 //cube.transform.position = new Vector3(startX + tileSize * i, .01f, startZ + tileSize * j);
