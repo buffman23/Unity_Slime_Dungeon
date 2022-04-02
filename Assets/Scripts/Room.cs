@@ -782,7 +782,7 @@ public class Room : MonoBehaviour
     }
 
     // assumes all SpawnOptions in list have keys
-    private void GenerateKey(List<SpawnOption> spawnOptions)
+    public void GenerateKey(List<SpawnOption> spawnOptions)
     {
         float floorSpawnRoll = Random.value;
         // pick random SpawnOption with key to keep key. Rest get key removed.

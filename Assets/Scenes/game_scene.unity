@@ -1038,6 +1038,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPoint: {x: 0, y: 0}
   doorwayDimensions: {x: 3, y: 4}
+  spawnRoom: 0
 --- !u!4 &913364436
 Transform:
   m_ObjectHideFlags: 0

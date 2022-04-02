@@ -18,10 +18,13 @@ public class MapController : MonoBehaviour
 
     public Vector2 spawnPoint;
 
+    public Vector2 doorwayDimensions = new Vector2(3f, 4f);
+
+    public bool spawnRoom;
+
     private List<Room> _rooms;
     private List<Room> _nonDeadEnds;
     private Room[,] _roomGrid;
-    public Vector2 doorwayDimensions = new Vector2(3f, 4f);
     private static Vector2Int _gridDimension = new Vector2Int(100, 100);
     private static Vector2Int _gridStart = new Vector2Int(_gridDimension.x/2, _gridDimension.y / 2);
     private static Vector2 _tileSize = new Vector2(46, 46);
@@ -65,7 +68,14 @@ public class MapController : MonoBehaviour
         {
             roomPosition = new Vector3(gridPosition.x * _tileSize.x - _spawnPointOffset.x, 0f, gridPosition.y * _tileSize.y - _spawnPointOffset.y);
             Vector2 wall2dDim = generateRoomSize();
+
+            if (spawnRoom && i == 0)
+            {
+                wall2dDim = new Vector2(8, 8);
+            }
+
             _roomPrefab.size = new Vector3(wall2dDim.x, _roomHeight, wall2dDim.y);
+            
 
             Room room = Instantiate(_roomPrefab, roomPosition, Quaternion.identity);
             //room.ga
@@ -129,8 +139,17 @@ public class MapController : MonoBehaviour
             prevRoom = room;
         }
 
-        foreach(Room room in _rooms)
+        // populate rooms with structures and deactivate them after.
+        // skip first room if spawRoom
+        int startIdx = 0;
+        if (spawnRoom)
         {
+            _rooms[0].GenerateKey(new List<SpawnOption>(0));
+            startIdx = 1;
+        }
+        for(int i = startIdx; i < _rooms.Count; ++i)
+        {
+            Room room = _rooms[i];
             room.GenerateTiles();
             room.gameObject.SetActive(false);
 
