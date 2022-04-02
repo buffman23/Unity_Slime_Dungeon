@@ -142,10 +142,8 @@ public class Door : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Door triggered with " + other.gameObject.name);
         if (_key == null && other.gameObject.name.Equals("Key"))
         {
-            Debug.Log("Key touched keyhole");
             _key = other.gameObject;
             _keyRB = _key.transform.GetComponent<Rigidbody>();
             _keyRB.useGravity = false;

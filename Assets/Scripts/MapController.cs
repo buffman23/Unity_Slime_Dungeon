@@ -293,17 +293,9 @@ public class MapController : MonoBehaviour
         int xGridPos = (int)((_spawnPointOffset.x + playerLocationX + _tileSize.x/2f) / _tileSize.x);
         int yGridPos = (int)((_spawnPointOffset.y + playerLocationY + _tileSize.y/2f) / _tileSize.y);
 
-        Debug.Log("(" + xGridPos + ", " + yGridPos + ")");
+        //Debug.Log("(" + xGridPos + ", " + yGridPos + ")");
         
         Room room = _roomGrid[xGridPos, yGridPos];
-        if (room != null)
-        {
-            Debug.Log(room.name);
-        }
-        else
-        {
-            Debug.Log("null");
-        }
 
         if (room != null) {
             if (room != _activeRooms[2])
