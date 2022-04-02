@@ -24,9 +24,16 @@ public class MapController : MonoBehaviour
     private static Vector2Int _gridDimension = new Vector2Int(100, 100);
     private static Vector2Int _gridStart = new Vector2Int(_gridDimension.x/2, _gridDimension.y / 2);
     private static Vector2 _tileSize = new Vector2(46, 46);
+    private static Vector2 _spawnPointOffset = new Vector2(_gridStart.x * _tileSize.x, _gridStart.y * _tileSize.y);
     private static float _roomHeight = 15;
     private int _roomCount = 25;
     private float _hallwayPosition = .5f;
+
+    private Room[] _activeRooms = new Room[5];
+
+    private int ticks = 0;
+
+    private PlayerController _player;
 
     private Vector2Int gridPositionDelta = Vector2Int.zero;
 
@@ -47,19 +54,18 @@ public class MapController : MonoBehaviour
         Vector2Int gridPosition = new Vector2Int(_gridStart.x, _gridStart.y);
         Room prevRoom = null;
         GameObject prevWall = null, wall = null;
-
-        Vector2 spawnPointOffset = new Vector2(gridPosition.x * _tileSize.x, gridPosition.y * _tileSize.y);
         GameObject map = new GameObject();
         map.name = "map";
 
         // generate random rooms
         for (int i = 0; i < _roomCount; ++i)
         {
-            roomPosition = new Vector3(gridPosition.x * _tileSize.x - spawnPointOffset.x, 0f, gridPosition.y * _tileSize.y - spawnPointOffset.y);
+            roomPosition = new Vector3(gridPosition.x * _tileSize.x - _spawnPointOffset.x, 0f, gridPosition.y * _tileSize.y - _spawnPointOffset.y);
             Vector2 wall2dDim = generateRoomSize();
             _roomPrefab.size = new Vector3(wall2dDim.x, _roomHeight, wall2dDim.y);
 
             Room room = Instantiate(_roomPrefab, roomPosition, Quaternion.identity);
+            //room.ga
             room.transform.SetParent(map.transform);
             room.name = "Room_" + i;
             room.gridPosition.x = gridPosition.x;
@@ -71,10 +77,13 @@ public class MapController : MonoBehaviour
             // remember last room to connect with hallway.
             if (prevRoom != null)
             {
+                prevRoom.nextRoom = room;
+                room.previousRoom = prevRoom;
+
                 wall = room.getWall(-gridPositionDelta);
                 room.MakeDoorway(-gridPositionDelta, _hallwayPosition, false);
                 Hallway hallway = MakeHallway(prevWall, wall);
-                hallway.transform.SetParent(map.transform);
+                hallway.transform.SetParent(room.transform);
             }
 
             // Last room wont have another room to make so break early
@@ -120,6 +129,7 @@ public class MapController : MonoBehaviour
         foreach(Room room in _rooms)
         {
             room.GenerateTiles();
+            room.gameObject.SetActive(false);
         }
 
         //setRoomGridsVisible(true);
@@ -129,6 +139,7 @@ public class MapController : MonoBehaviour
     {
         _roomPrefab = Resources.Load<Room>("Prefabs/Room");
         _hallwayPrefab = Resources.Load<Hallway>("Prefabs/Hallway");
+        _player = PlayerController.instance;
     }
 
     private void InitRoomSpawnOptions()
@@ -268,6 +279,90 @@ public class MapController : MonoBehaviour
         foreach(Room room in _rooms)
         {
             room.SetGridVisible(b);
+        }
+    }
+
+    private void Update()
+    {
+        if (ticks++ % 100 != 0)
+            return;
+
+        float playerLocationX = _player.transform.position.x;
+        float playerLocationY = _player.transform.position.z;
+
+        int xGridPos = (int)((_spawnPointOffset.x + playerLocationX + _tileSize.x/2f) / _tileSize.x);
+        int yGridPos = (int)((_spawnPointOffset.y + playerLocationY + _tileSize.y/2f) / _tileSize.y);
+
+        Debug.Log("(" + xGridPos + ", " + yGridPos + ")");
+        
+        Room room = _roomGrid[xGridPos, yGridPos];
+        if (room != null)
+        {
+            Debug.Log(room.name);
+        }
+        else
+        {
+            Debug.Log("null");
+        }
+
+        if (room != null) {
+            if (room != _activeRooms[2])
+            {
+                Room[] newActiveRooms = new Room[5];
+
+                if (room.previousRoom != null)
+                {
+                    newActiveRooms[1] = room.previousRoom;
+
+                    if (room.previousRoom.previousRoom != null)
+                    {
+                        newActiveRooms[0] = room.previousRoom.previousRoom;
+                    }
+                }
+
+                newActiveRooms[2] = room;
+
+                if (room.nextRoom != null)
+                {
+                    newActiveRooms[3] = room.nextRoom;
+
+                    if (room.nextRoom.nextRoom != null)
+                    {
+                        newActiveRooms[4] = room.nextRoom.nextRoom;
+                    }
+                }
+
+                for (int i = 0; i < _activeRooms.Length; ++i)
+                {
+                    if (_activeRooms[i] != null)
+                    {
+                        bool contains = false;
+                        for (int j = 0; j < newActiveRooms.Length; ++j)
+                        {
+                            if (_activeRooms[i] == newActiveRooms[j])
+                            {
+                                contains = true;
+                                break;
+                            }
+                        }
+
+                        if (!contains)
+                        {
+                            _activeRooms[i].gameObject.SetActive(false);
+                        }
+                    }
+                }
+
+                foreach (Room r in newActiveRooms)
+                {
+                    if (r != null)
+                    {
+                        r.gameObject.SetActive(true);
+                    }
+                }
+
+                _activeRooms = newActiveRooms;
+            }
         }
     }
 }

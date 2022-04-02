@@ -43,7 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33a7ab0d6dbfe454f8f759957a76b58a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 39.871193, y: 5, z: 38.226494}
+  size: {x: 32, y: 15, z: 40}
   deadEnd: 0
   gridPosition: {x: 0, y: 0}
   doorwayDimensions: {x: 3, y: 4}
+  previousRoom: {fileID: 0}
+  nextRoom: {fileID: 0}

@@ -25,6 +25,10 @@ public class Room : MonoBehaviour
 
     public static float wallThickness = 1f;
 
+    public Room previousRoom;
+
+    public Room nextRoom;
+
     public const int NORTH_WALL = 0, EAST_WALL = 1, SOUTH_WALL = 2, WEST_WALL = 3;
 
     public const int NE_CORNER = 0, SE_CORNER = 1, SW_CORNER = 2, NW_CORNER = 3;
