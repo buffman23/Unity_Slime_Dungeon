@@ -11,6 +11,7 @@ YoutTube Tutorials:
   - Adobe Substance 3D Painter intro: https://www.youtube.com/watch?v=mv6pg1O9vEQ&t
   - How to make UV map Blender: https://www.youtube.com/watch?v=AnRQhH3fEDY
   - How to attach weapon to player hand: https://www.youtube.com/watch?v=S_USClc_r5c
+  - Nav Mesh: https://www.youtube.com/watch?v=FkLJ45Pt-mY
 
 Animations:
  - https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271

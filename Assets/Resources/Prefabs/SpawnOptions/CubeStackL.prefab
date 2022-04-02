@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2066822572796467067}
   - component: {fileID: 2576286577996163789}
   - component: {fileID: 4061123641965813079}
+  - component: {fileID: 496966760009187393}
   m_Layer: 6
   m_Name: Cube (1)
   m_TagString: Draggable
@@ -112,6 +113,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &496966760009187393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505873389129796412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d07ce676d7afda4dabb3b0f7dd5e654, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_IgnoreFromBuild: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &3644535696341113457
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,6 +332,7 @@ GameObject:
   - component: {fileID: 3435900857319272870}
   - component: {fileID: 5176249497330533546}
   - component: {fileID: 5316110580273721265}
+  - component: {fileID: 1054053027748560889}
   m_Layer: 6
   m_Name: Cube (2)
   m_TagString: Draggable
@@ -414,6 +432,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1054053027748560889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6590137891238849124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d07ce676d7afda4dabb3b0f7dd5e654, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_IgnoreFromBuild: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &8427368957155933395
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,6 +461,7 @@ GameObject:
   - component: {fileID: 3700545475418939764}
   - component: {fileID: 4298608535647751028}
   - component: {fileID: 8934612630241283668}
+  - component: {fileID: 5695478424096191131}
   m_Layer: 6
   m_Name: Cube (3)
   m_TagString: Draggable
@@ -526,6 +561,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5695478424096191131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8427368957155933395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d07ce676d7afda4dabb3b0f7dd5e654, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_IgnoreFromBuild: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &8477488161990748153
 GameObject:
   m_ObjectHideFlags: 0

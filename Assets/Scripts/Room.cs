@@ -7,7 +7,9 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Room : MonoBehaviour
 {
@@ -33,7 +35,9 @@ public class Room : MonoBehaviour
 
     public const int NE_CORNER = 0, SE_CORNER = 1, SW_CORNER = 2, NW_CORNER = 3;
 
-    private static GameObject _lightPrefab, _doorPrefab, _keyPrefab;
+    private static GameObject _lightPrefab, _keyPrefab;
+
+    private static Door _doorPrefab;
 
     private GameObject[] _walls = new GameObject[4];
 
@@ -52,11 +56,9 @@ public class Room : MonoBehaviour
     private List<GameObject> _drawGridObjects;
 
 
-    private List<GameObject> _doors = new List<GameObject>(1);
+    private List<Door> _doors = new List<Door>(1);
 
     private List<SpawnOption> _sosWithKey = new List<SpawnOption>(16);
-
-
 
     public const int SMALL_GRID_SIZE = 1,  LARGE_GRID_SIZE = 8,  XLARGE_GRID_SIZE = 16;
 
@@ -82,6 +84,7 @@ public class Room : MonoBehaviour
             _floor.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * _floor.transform.lossyScale.x,
                 scale.y * _floor.transform.lossyScale.z);
             _floor.layer = LayerMask.NameToLayer("Ground");
+            GameObjectUtility.SetStaticEditorFlags(_floor, StaticEditorFlags.NavigationStatic);
         }
         else
         {
@@ -226,6 +229,7 @@ public class Room : MonoBehaviour
         //MakeDoorway(_walls[SOUTH_WALL], Random.Range(0f, 1f));
         //MakeDoorway(_walls[WEST_WALL], Random.Range(0f, 1f));
     }
+
     // Start is called before the first frame update
     private void initReferences()
     {
@@ -242,7 +246,7 @@ public class Room : MonoBehaviour
             _lightPrefab = Resources.Load<GameObject>("Prefabs/SpawnOptions/WallLight");
 
         if(_doorPrefab == null)
-            _doorPrefab = Resources.Load<GameObject>("Prefabs/Door");
+            _doorPrefab = Resources.Load<Door>("Prefabs/Door");
 
         if (_keyPrefab == null)
             _keyPrefab = Resources.Load<GameObject>("Prefabs/Key");
@@ -253,6 +257,11 @@ public class Room : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public List<Door> GetDoors()
+    {
+        return _doors;
     }
 
     public void GenerateTiles()
@@ -458,7 +467,7 @@ public class Room : MonoBehaviour
 
         if (makeDoor)
         {
-            GameObject door = Instantiate(_doorPrefab);
+            Door door = Instantiate(_doorPrefab);
             //door.transform.position = new Vector3(wall.transform.position.x,
             //    wall.transform.position.y - wall.transform.lossyScale.y/2f + door.transform.lossyScale.y/2f, 
             //    wall.transform.position.z);
@@ -469,6 +478,7 @@ public class Room : MonoBehaviour
             door.transform.SetParent(wall.transform);
             door.transform.localPosition = new Vector3(0f, -.5f + (doorChild.localScale.y * door.transform.localScale.y)/2f, 0f);
             door.name = "Door";
+
             _doors.Add(door);
         }
 
@@ -480,6 +490,7 @@ public class Room : MonoBehaviour
     {
         Destroy(_walls[side]);
     }
+
     public void RemoveWall(Vector2 side)
     { 
         int wall_const = NORTH_WALL;

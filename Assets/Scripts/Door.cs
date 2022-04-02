@@ -31,13 +31,25 @@ public class Door : MonoBehaviour
 
     private Quaternion _destinationRotation;
 
-    
+    public UnityEngine.Events.UnityEvent opened;
 
     // Start is called before the first frame update
     void Start()
     {
         _keyholeTrans = transform.Find("KeyholePos");
         _animator = GetComponent<Animator>();
+
+        AnimationEvent evt;
+        evt = new AnimationEvent();
+        evt.time = 2f;
+        evt.functionName = "DoorOpened";
+        _animator.runtimeAnimatorController.animationClips[1].AddEvent(evt);
+    }
+
+    private void DoorOpened()
+    {
+        Debug.Log("Door opened");
+        opened.Invoke();
     }
 
     // Update is called once per frame
