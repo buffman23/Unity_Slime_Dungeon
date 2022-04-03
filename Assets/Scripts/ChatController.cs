@@ -257,7 +257,7 @@ public class ChatController : MonoBehaviour
                             _playerController.runSpeed = _playerController.walkSpeed * runWalkRatio;
                             write(string.Format("Set player walk speed: {0}, run speed {1:0.00}", _playerController.walkSpeed, _playerController.runSpeed));
                         }
-                        catch (System.FormatException e)
+                        catch (System.FormatException)
                         {
                             write("speed [walkspeed]/reset");
                         }
@@ -279,7 +279,7 @@ public class ChatController : MonoBehaviour
                             _playerController.jumpHeight = float.Parse(split[1]);
                             write(string.Format("Set player jump height: {0:0.00},", _playerController.jumpHeight));
                         }
-                        catch (System.FormatException e)
+                        catch (System.FormatException)
                         {
                             write("jump [jump height]/reset");
                         }
@@ -309,7 +309,7 @@ public class ChatController : MonoBehaviour
                     Camera.main.transform.localPosition = new Vector3(cam_position.x, cam_position.y, float.Parse(split[1]));
                     write("Set camera position to:" + Camera.main.transform.localPosition.ToString());
                 }
-                catch (System.FormatException e)
+                catch (System.FormatException)
                 {
 
                 }

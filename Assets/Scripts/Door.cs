@@ -17,8 +17,6 @@ public class Door : MonoBehaviour
 
     private bool _rotate = false;
 
-    private bool _openDoor = false;
-
     private GameObject _key;
 
     private Rigidbody _keyRB;
@@ -73,7 +71,6 @@ public class Door : MonoBehaviour
                 _insertReady = false;
                 Destroy(_keyRB);
                 _key.transform.SetParent(transform.Find("Armature"));
-                _openDoor = true;
                 _animator.SetBool("OpenDoor", true);
             }
 
