@@ -147,7 +147,7 @@ public class Room : MonoBehaviour
         scale = _ceiling.GetComponent<Renderer>().material.mainTextureScale;
         _ceiling.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * _ceiling.transform.lossyScale.x,
             scale.y * _ceiling.transform.lossyScale.z);
-        Destroy(_ceiling.GetComponent<BoxCollider>());
+        //Destroy(_ceiling.GetComponent<BoxCollider>());
 
         GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         wall.transform.SetParent(transform);

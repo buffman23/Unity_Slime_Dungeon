@@ -82,6 +82,9 @@ public class PlayerController : MonoBehaviour
 
     private Image _draggableHighlight;
 
+    public float mass = 3.0f; // defines the character mass
+    private Vector3 _impact = Vector3.zero;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -126,9 +129,11 @@ public class PlayerController : MonoBehaviour
 
         bool braceLand = Physics.CheckSphere(groudCheck.position, _braceLandDistance, groundMask);
 
-        if (_isGrounded && _velocity.y < 0 && !fly)
+        if (_isGrounded && _velocity.y < -2f && !fly)
         {
             _velocity.y = -2f;
+            _impact.y = 0;
+            _impact.y = 0;
         }
 
         _x = Input.GetAxis("Horizontal");
@@ -201,7 +206,11 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _velocity.y += gravity * Time.deltaTime;
+            if (!_isGrounded)
+            {
+                _velocity.y += gravity * Time.deltaTime;
+            }
+
             if (Input.GetButtonDown("Jump") && _isGrounded)
             {
 
@@ -209,7 +218,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        _characterController.Move(_velocity * Time.deltaTime);
+        _characterController.Move((_impact +_velocity) * Time.deltaTime);
 
         _animator.SetFloat("Speed", (moveSpeed * move).magnitude);
         _animator.SetFloat("Forward", _z);
@@ -219,6 +228,12 @@ public class PlayerController : MonoBehaviour
         _animator.SetBool("BraceLand", braceLand);
 
         updateAttack();
+
+        // apply the _impact force:
+        //if (_impact.magnitude > 0.2) _characterController.Move(_impact * Time.deltaTime);
+        // consumes the _impact energy each cycle:
+
+        _impact = Vector3.Lerp(_impact, Vector3.zero, Time.deltaTime);
     }
 
     private void FixedUpdate()
@@ -352,5 +367,13 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit;
         bool found = Physics.Raycast(start, direction, out hit, LayerMask.NameToLayer("Ground"));
         return (found, hit);
+    }
+
+    // call this function to add an _impact force:
+    public void AddImpact(Vector3 dir, float force)
+    {
+        dir.Normalize();
+        if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
+        _impact += dir.normalized * force / mass;
     }
 }
