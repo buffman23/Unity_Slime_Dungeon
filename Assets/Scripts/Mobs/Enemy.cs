@@ -5,6 +5,10 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
+    public GameObject key;
+
+    private Rigidbody _keyRB;
+
     protected static PlayerController _playerController;
 
     protected virtual void Start()
@@ -16,6 +20,17 @@ public class Enemy : MonoBehaviour
     {
         if (_playerController == null)
             _playerController = PlayerController.instance;
+    }
+
+    public virtual void kill()
+    {
+        if(key != null)
+        {
+            key.transform.SetParent(null);
+            key.AddComponent<Rigidbody>();
+        }
+
+        Destroy(this.gameObject);
     }
 
     // Update is called once per frame

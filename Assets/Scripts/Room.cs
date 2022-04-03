@@ -23,7 +23,7 @@ public class Room : MonoBehaviour
 
     public Vector2 doorwayDimensions = new Vector2(3f, 4f);
 
-    public static float keyFloorSpawnChance = 1/3f;
+    public static float keyFloorSpawnChance = 0f;
 
     public static float wallThickness = 1f;
 
@@ -61,7 +61,7 @@ public class Room : MonoBehaviour
 
     private List<Door> _doors = new List<Door>(1);
 
-    private List<SpawnOption> _sosWithKey = new List<SpawnOption>(16);
+    private List<GameObject> _keys = new List<GameObject>(16);
 
     public const int SMALL_GRID_SIZE = 1,  LARGE_GRID_SIZE = 8,  XLARGE_GRID_SIZE = 16;
 
@@ -298,7 +298,7 @@ public class Room : MonoBehaviour
 
         for (int i = 0; i < _doors.Count; ++i)
         {
-            GenerateKey(_sosWithKey);
+            GenerateKey(_keys);
         }
     }
 
@@ -783,10 +783,21 @@ public class Room : MonoBehaviour
                 }
 
                 StripTemplateObjets(so);
-
-                if(so.transform.Find("Key") != null)
+                Transform key = so.transform.Find("Key");
+                if (key != null)
                 {
-                    _sosWithKey.Add(so);
+                    _keys.Add(key.gameObject);
+                } 
+                else
+                {
+                    foreach(Transform child in so.transform)
+                    {
+                        key = child.transform.Find("Key");
+                        if (key != null)
+                        {
+                            _keys.Add(key.gameObject);
+                        }
+                    }
                 }
 
 
@@ -809,14 +820,14 @@ public class Room : MonoBehaviour
     }
 
     // assumes all SpawnOptions in list have keys
-    public void GenerateKey(List<SpawnOption> spawnOptions)
+    public void GenerateKey(List<GameObject> keys)
     {
         float floorSpawnRoll = Random.value;
         // pick random SpawnOption with key to keep key. Rest get key removed.
-        if (spawnOptions.Count > 0 && keyFloorSpawnChance < floorSpawnRoll)
+        if (keys.Count > 0 && keyFloorSpawnChance < floorSpawnRoll)
         {
-            int randIdx = (int)Random.Range(0, spawnOptions.Count);
-            spawnOptions.RemoveAt(randIdx);
+            int randIdx = (int)Random.Range(0, keys.Count);
+            keys.RemoveAt(randIdx);
         }
         else
         {
@@ -833,11 +844,9 @@ public class Room : MonoBehaviour
             key.name = "Key";
         }
 
-        foreach (SpawnOption so in spawnOptions)
+        foreach (GameObject key in keys)
         {
-            Transform keyTrans = so.transform.Find("Key");
-            if (keyTrans)
-                Destroy(keyTrans.gameObject);
+            Destroy(key);
         }
     }
 

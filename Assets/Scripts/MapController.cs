@@ -151,7 +151,7 @@ public class MapController : MonoBehaviour
         int startIdx = 0;
         if (spawnRoom)
         {
-            _rooms[0].GenerateKey(new List<SpawnOption>(0));
+            _rooms[0].GenerateKey(new List<GameObject>(0));
             startIdx = 1;
         }
         for(int i = startIdx; i < _rooms.Count; ++i)
@@ -167,7 +167,6 @@ public class MapController : MonoBehaviour
     public void HandleDoorOpened()
     {
         surface.BuildNavMesh();
-        Debug.Log("Door opened handled");
     }
 
     private void InitReferences()

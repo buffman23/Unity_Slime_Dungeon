@@ -22,19 +22,28 @@ public class Sword : MonoBehaviour
     {
         Debug.Log("Blade hit " + other.gameObject.transform.root.name);
         GameObject go = other.gameObject;
+
+        if (go == null)
+            return;
+
         Enemy enemy = go.transform.GetComponentInChildren<Enemy>();
 
         
         if (enemy != null)
         {
-            Destroy(enemy.gameObject);
+            enemy.kill();
         }
         else
         {
+            Transform parentTrans = go.transform.parent;
+
+            if (parentTrans == null)
+                return;
+
             enemy = go.transform.parent.GetComponent<Enemy>();
             if (enemy != null && swinging)
             {
-                Destroy(enemy.gameObject);
+                enemy.kill();
             }
         }
     }

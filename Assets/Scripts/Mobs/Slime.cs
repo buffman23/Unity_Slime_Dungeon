@@ -74,11 +74,19 @@ public class Slime : Enemy
                     Vector3 lookVector = new Vector3(_waypoints[1].x, transform.position.y, _waypoints[1].z);
                     transform.LookAt(lookVector);
 
-                    _rigidBody.AddForce(transform.up * 5f, ForceMode.VelocityChange);
-                    _rigidBody.AddForce(transform.forward * 5f, ForceMode.VelocityChange);
-
-                    _isGrounded = false;
+                    
                 }
+                else
+                {
+                    Vector3 playerPosition = _playerController.transform.position;
+                    Vector3 lookVector = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
+                    transform.LookAt(lookVector);
+                }
+
+                _rigidBody.AddForce(transform.up * 5f, ForceMode.VelocityChange);
+                _rigidBody.AddForce(transform.forward * 5f, ForceMode.VelocityChange);
+
+                _isGrounded = false;
             }
         }
         else
