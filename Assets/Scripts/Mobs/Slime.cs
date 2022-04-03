@@ -21,6 +21,8 @@ public class Slime : Enemy
 
     private GameObject _body;
 
+    private Animator _animator;
+
     private LinkedList<GameObject> _floorTriggers = new LinkedList<GameObject>();
 
     // Start is called before the first frame update
@@ -42,6 +44,7 @@ public class Slime : Enemy
         _rigidBody = GetComponent<Rigidbody>();
         _particles = transform.Find("Particle System").GetComponent<ParticleSystem>();
         _body = transform.Find("Body").gameObject;
+        _animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -99,16 +102,30 @@ public class Slime : Enemy
                 _isGrounded = false;
             }
         }
-        else
-        {
-            _isGrounded = IsGrounded();
-        }
+
+        _isGrounded = IsGrounded();
+        _animator.SetBool("OnGround", _isGrounded);
     }
 
     private bool IsGrounded()
     {
-        //return Physics.Raycast(transform.position, -Vector3.up, _halfHeight + 0.1f);
-        return _floorTriggers.Count > 0;
+        Vector3 corner = transform.position - transform.lossyScale / 2f;
+        float length = transform.lossyScale.x;
+        float width = transform.lossyScale.z;
+
+        if (Physics.Raycast(corner, -Vector3.up, 0.1f))
+            return true;
+
+        if (Physics.Raycast(corner + new Vector3(length, 0f, width), -Vector3.up, 0.1f))
+            return true;
+
+        if (Physics.Raycast(corner + new Vector3(length, 0f, 0f), -Vector3.up, 0.1f))
+            return true;
+
+        if (Physics.Raycast(corner + new Vector3(0f, 0f, width), -Vector3.up, 0.1f))
+            return true;
+
+        return false;
     }
 
     public override void Kill(bool destroy)
