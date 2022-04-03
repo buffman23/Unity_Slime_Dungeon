@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody _draggedObjectRB;
 
-    private Transform _neckTrans, _headTrans;
+    private Transform _neckTrans, _headTrans, _spineTrans, _chestTrans;
 
     private Quaternion _lastUpdateRotate;
 
@@ -111,7 +111,9 @@ public class PlayerController : MonoBehaviour
         _playerTrans = GetComponent<Transform>();
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
+        _spineTrans = transform.Find("PlayerRig/Armature/Hips/Spine").transform;
         _neckTrans = transform.Find("PlayerRig/Armature/Hips/Spine/Chest/UpperChest/Neck").transform;
+        _chestTrans = transform.Find("PlayerRig/Armature/Hips/Spine/Chest").transform;
         _headTrans = _neckTrans.Find("Head");
 
         _draggableHighlight = GameObject.Find("DraggableHighlight").GetComponent<Image>();
@@ -327,7 +329,7 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        _neckTrans.localRotation = _lastUpdateRotate;
+        _spineTrans.localRotation = _lastUpdateRotate;
         //Camera.main.transform.rotation = _lastUpdateRotate;
         Camera.main.transform.position = _headTrans.position + _headTrans.up * cameraHeadOffset;
     }

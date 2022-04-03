@@ -20,12 +20,22 @@ public class Sword : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Blade hit " + other.gameObject.name);
-    }
+        Debug.Log("Blade hit " + other.gameObject.transform.root.name);
+        GameObject go = other.gameObject;
+        Enemy enemy = go.transform.GetComponentInChildren<Enemy>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        Debug.Log("Swinging:" + swinging);
+        
+        if (enemy != null)
+        {
+            Destroy(enemy.gameObject);
+        }
+        else
+        {
+            enemy = go.transform.parent.GetComponent<Enemy>();
+            if (enemy != null && swinging)
+            {
+                Destroy(enemy.gameObject);
+            }
+        }
     }
 }

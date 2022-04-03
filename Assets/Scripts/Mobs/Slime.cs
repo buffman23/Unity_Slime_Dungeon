@@ -87,7 +87,6 @@ public class Slime : Enemy
         }
     }
 
-
     private bool IsGrounded()
     {
         return Physics.Raycast(transform.position, -Vector3.up, _halfHeight + 0.1f);

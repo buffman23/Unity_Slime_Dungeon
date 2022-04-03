@@ -1046,7 +1046,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4087033346362007403, guid: 4bf2c5af8a11e694da9891a81089d2be, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.311845
+      value: 0.81
       objectReference: {fileID: 0}
     - target: {fileID: 4087033346362007403, guid: 4bf2c5af8a11e694da9891a81089d2be, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1188,9 +1188,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 90.708
       objectReference: {fileID: 0}
+    - target: {fileID: 515671506018558496, guid: 6f726394f5e6e954291dbf1699b28e6a, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 858324205677713952, guid: 6f726394f5e6e954291dbf1699b28e6a, type: 3}
       propertyPath: m_Name
-      value: sword
+      value: Sword
       objectReference: {fileID: 0}
     - target: {fileID: 858324205677713952, guid: 6f726394f5e6e954291dbf1699b28e6a, type: 3}
       propertyPath: m_TagString
