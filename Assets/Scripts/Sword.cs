@@ -20,7 +20,6 @@ public class Sword : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Blade hit " + other.gameObject.transform.root.name);
         GameObject go = other.gameObject;
 
         if (go == null)
@@ -31,7 +30,7 @@ public class Sword : MonoBehaviour
         
         if (enemy != null)
         {
-            enemy.kill();
+            enemy.Kill();
         }
         else
         {
@@ -43,7 +42,7 @@ public class Sword : MonoBehaviour
             enemy = go.transform.parent.GetComponent<Enemy>();
             if (enemy != null && swinging)
             {
-                enemy.kill();
+                enemy.Kill();
             }
         }
     }

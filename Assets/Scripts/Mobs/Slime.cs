@@ -17,6 +17,10 @@ public class Slime : Enemy
 
     private Vector3[] _waypoints;
 
+    private ParticleSystem _particles;
+
+    private GameObject _body;
+
     // Start is called before the first frame update
     protected override void Start() 
     {
@@ -34,6 +38,8 @@ public class Slime : Enemy
     private void InitReferences()
     {
         _rigidBody = GetComponent<Rigidbody>();
+        _particles = transform.Find("Particle System").GetComponent<ParticleSystem>();
+        _body = transform.Find("Body").gameObject;
     }
 
     // Update is called once per frame
@@ -44,6 +50,8 @@ public class Slime : Enemy
 
     private void Update()
     {
+        if (_dead)
+            return;
 
         if (_isGrounded)
         {
@@ -98,5 +106,21 @@ public class Slime : Enemy
     private bool IsGrounded()
     {
         return Physics.Raycast(transform.position, -Vector3.up, _halfHeight + 0.1f);
+    }
+
+    public override void Kill()
+    {
+        base.Kill(false);
+        Destroy(_body);
+        StartCoroutine(ParticleDeath());
+    }
+
+    IEnumerator ParticleDeath()
+    {
+        _particles.Play();
+
+        yield return new WaitForSeconds(3);
+
+        base.Kill(true);
     }
 }

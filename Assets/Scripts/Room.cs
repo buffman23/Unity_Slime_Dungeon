@@ -267,7 +267,8 @@ public class Room : MonoBehaviour
         {
             foreach (Enemy enemy in _enemies)
             {
-                enemy.gameObject.SetActive(true);
+                if(enemy != null)
+                    enemy.gameObject.SetActive(true);
             }
         }
     }
@@ -707,13 +708,16 @@ public class Room : MonoBehaviour
             int randIdx = (int)Random.Range(0, spawnOptionsDup.Count);
             SpawnOption so = spawnOptionsDup[randIdx];
 
+            if (maxSpawnDict[so] == 0)
+            {
+                spawnOptionsDup.Remove(so);
+                continue;
+            }
+
             float rand = Random.Range(0f, 1f);
             if (rand < so.probability)
             {
-                if (--maxSpawnDict[so] == 0)
-                {
-                    spawnOptions.Remove(so);
-                }
+                maxSpawnDict[so] = maxSpawnDict[so] - 1;
                 return so;
             }
 

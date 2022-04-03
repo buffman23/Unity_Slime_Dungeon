@@ -48,7 +48,6 @@ public class Door : MonoBehaviour
 
     private void DoorOpened()
     {
-        Debug.Log("Door opened");
         opened.Invoke();
     }
 

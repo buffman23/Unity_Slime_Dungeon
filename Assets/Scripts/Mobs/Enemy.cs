@@ -11,6 +11,8 @@ public class Enemy : MonoBehaviour
 
     protected static PlayerController _playerController;
 
+    protected bool _dead;
+
     protected virtual void Start()
     {
         InitReferences();
@@ -22,20 +24,29 @@ public class Enemy : MonoBehaviour
             _playerController = PlayerController.instance;
     }
 
-    public virtual void kill()
+    public virtual void Kill()
     {
-        if(key != null)
+        this.Kill(true);
+    }
+
+    public virtual void Kill(bool destroy)
+    {
+        _dead = true;
+
+        if (key != null)
         {
             key.transform.SetParent(null);
             key.AddComponent<Rigidbody>();
+            key = null;
         }
 
-        Destroy(this.gameObject);
+        if(destroy)
+            Destroy(this.gameObject);
     }
 
     // Update is called once per frame
     //protected virtual void Update()
     //{
-        
+
     //}
 }
