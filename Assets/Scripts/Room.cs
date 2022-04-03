@@ -796,7 +796,6 @@ public class Room : MonoBehaviour
                 Enemy enemy = so.gameObject.GetComponentInChildren<Enemy>();
                 if (enemy != null)
                 {
-                    Debug.Log("Enemy not null");
                     _enemies.Add(enemy);
                     enemy.gameObject.SetActive(false);
                 }

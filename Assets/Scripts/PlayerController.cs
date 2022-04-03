@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
 
     public float groundDistance;
 
+    public Sword sword;
+
     private float _braceLandDistance;
 
     public LayerMask groundMask;
@@ -169,6 +171,8 @@ public class PlayerController : MonoBehaviour
 
         Camera.main.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
         _lastUpdateRotate = Quaternion.Euler(_xRotation, 0f, 0f);
+
+        _animator.SetFloat("VerticalLook", -_xRotation);
         
         _playerTrans.Rotate(Vector3.up * mouseX);
 
@@ -211,11 +215,25 @@ public class PlayerController : MonoBehaviour
         _animator.SetFloat("Vertical", Mathf.Abs(_velocity.y));
         _animator.SetBool("Grounded", _isGrounded);
         _animator.SetBool("BraceLand", braceLand);
+
+        updateAttack();
     }
 
     private void FixedUpdate()
     {
         updateDrag();
+    }
+
+    private void updateAttack()
+    {
+        if(Input.GetMouseButton(0))
+        {
+            _animator.SetBool("Attack", true);
+        }
+        else
+        {
+            _animator.SetBool("Attack", false);
+        }
     }
 
     private void updateDrag()
