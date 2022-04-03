@@ -21,6 +21,8 @@ public class Slime : Enemy
 
     private GameObject _body;
 
+    private LinkedList<GameObject> _floorTriggers = new LinkedList<GameObject>();
+
     // Start is called before the first frame update
     protected override void Start() 
     {
@@ -105,7 +107,8 @@ public class Slime : Enemy
 
     private bool IsGrounded()
     {
-        return Physics.Raycast(transform.position, -Vector3.up, _halfHeight + 0.1f);
+        //return Physics.Raycast(transform.position, -Vector3.up, _halfHeight + 0.1f);
+        return _floorTriggers.Count > 0;
     }
 
     public override void Kill()
@@ -113,6 +116,16 @@ public class Slime : Enemy
         base.Kill(false);
         Destroy(_body);
         StartCoroutine(ParticleDeath());
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        _floorTriggers.AddFirst(other.gameObject);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        _floorTriggers.Remove(other.gameObject);
     }
 
     IEnumerator ParticleDeath()
