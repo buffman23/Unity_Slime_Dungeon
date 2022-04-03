@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GasTrap : MonoBehaviour
@@ -8,6 +9,8 @@ public class GasTrap : MonoBehaviour
     private HashSet<Rigidbody> _rigidBodies = new HashSet<Rigidbody>();
     private Dictionary<GameObject, PlayerController> _touchingPlayer = new Dictionary<GameObject, PlayerController>();
     private HashSet<PlayerController> _playerControllers = new HashSet<PlayerController>();
+
+    private List<Rigidbody> _removeLater = new List<Rigidbody>();
 
     public static Vector3 upForce = new Vector3(0f, 50f, 0f);
 
@@ -27,10 +30,28 @@ public class GasTrap : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         foreach (Rigidbody rb in _rigidBodies)
         {
-            rb.AddForce(upForce * Time.fixedDeltaTime, ForceMode.Impulse);
+            try
+            {
+                rb.AddForce(upForce * Time.fixedDeltaTime, ForceMode.Impulse);
+            }catch(MissingReferenceException)
+            {
+                _removeLater.Add(rb);
+            }
         }
+
+        foreach(Rigidbody rb in _removeLater)
+        {
+            _rigidBodies.Remove(rb);
+
+            // https://stackoverflow.com/questions/7176263/would-remove-a-key-from-dictionary-in-foreach-cause-a-problem-or-should-i-bette
+            var itemsToRemove = _touching.Where(f => f.Value == rb).ToArray();
+            foreach (var item in itemsToRemove)
+                _touching.Remove(item.Key);
+        }
+        _removeLater.Clear();
 
         foreach (PlayerController pc in _playerControllers)
         {
@@ -95,7 +116,7 @@ public class GasTrap : MonoBehaviour
                 _rigidBodies.Remove(rb);
                 return;
             }
-        }catch(KeyNotFoundException ex)
+        }catch(KeyNotFoundException)
         {
 
         }
@@ -109,7 +130,7 @@ public class GasTrap : MonoBehaviour
                 return;
             }
         }
-        catch (KeyNotFoundException ex)
+        catch (KeyNotFoundException)
         {
 
         }
