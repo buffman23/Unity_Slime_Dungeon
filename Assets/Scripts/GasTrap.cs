@@ -63,7 +63,6 @@ public class GasTrap : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         GameObject go = other.gameObject;
-        Debug.Log("Trigger hit " + go.name);
         Rigidbody rb = go.GetComponent<Rigidbody>();
         
         if(rb == null)
@@ -77,7 +76,6 @@ public class GasTrap : MonoBehaviour
 
         if (rb != null)
         {
-            Debug.Log("Added" + go.name);
             _touching[go] = rb;
             _rigidBodies.Add(rb);
             return;
@@ -97,7 +95,6 @@ public class GasTrap : MonoBehaviour
 
         if (pc != null)
         {
-            Debug.Log("Added player controller");
             _touchingPlayer[go] = pc;
             _playerControllers.Add(pc);
         }
