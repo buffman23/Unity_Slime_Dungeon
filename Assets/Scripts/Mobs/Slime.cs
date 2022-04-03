@@ -5,9 +5,10 @@ using UnityEngine.AI;
 
 public class Slime : Enemy
 {
-    private float _jumpCurrentTime = 0f;
-    private static float _jumpWaitTime = 2f;
-    private static float _distToGround = 1f;
+    private float _jumpCooldownTime = 0f;
+    private float _stuckTime = 0f;
+    private static float _jumpCooldownMaxTime = 2f;
+    private static float _maxStuckTime = 6f;
 
     private Rigidbody _rigidBody;
 
@@ -36,7 +37,7 @@ public class Slime : Enemy
         _halfHeight = transform.lossyScale.y / 2f;
 
         // init random starting _jumpCurretnTime so not all simes jump at same time.
-        _jumpCurrentTime = Random.Range(-_jumpWaitTime, 0);
+        _jumpCooldownTime = Random.Range(-_jumpCooldownMaxTime, 0);
     }
 
     private void InitReferences()
@@ -58,9 +59,11 @@ public class Slime : Enemy
         if (_dead)
             return;
 
-        if (_isGrounded)
+        _stuckTime += Time.deltaTime;
+
+        if (_isGrounded || _stuckTime >= _maxStuckTime)
         {
-            _jumpCurrentTime += Time.deltaTime;
+            _jumpCooldownTime += Time.deltaTime;
 
             //if (_waypoints != null)
             //{
@@ -68,10 +71,11 @@ public class Slime : Enemy
             //        Debug.DrawLine(_waypoints[i], _waypoints[i + 1], Color.red);
             //}
 
-            if (_jumpCurrentTime >= _jumpWaitTime)
+            if (_jumpCooldownTime >= _jumpCooldownMaxTime)
             {
                 // now jump since cooldown is reached
-                _jumpCurrentTime = 0f;
+                _jumpCooldownTime = 0f;
+                _stuckTime = 0f;
 
                 var path = new NavMeshPath();
                 Vector3 destination = PlayerController.instance.transform.position;
