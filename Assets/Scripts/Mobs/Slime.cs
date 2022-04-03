@@ -111,11 +111,13 @@ public class Slime : Enemy
         return _floorTriggers.Count > 0;
     }
 
-    public override void Kill()
+    public override void Kill(bool destroy)
     {
         base.Kill(false);
         Destroy(_body);
+        _rigidBody.isKinematic = true;
         StartCoroutine(ParticleDeath());
+
     }
 
     private void OnTriggerEnter(Collider other)

@@ -9,6 +9,8 @@ public class Enemy : MonoBehaviour
 
     private Rigidbody _keyRB;
 
+    private Rigidbody _rb;
+
     protected static PlayerController _playerController;
 
     protected bool _dead;
