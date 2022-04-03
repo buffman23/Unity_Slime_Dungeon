@@ -90,7 +90,7 @@ public class Room : MonoBehaviour
             _floor.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x * _floor.transform.lossyScale.x,
                 scale.y * _floor.transform.lossyScale.z);
             _floor.layer = LayerMask.NameToLayer("Ground");
-            GameObjectUtility.SetStaticEditorFlags(_floor, StaticEditorFlags.NavigationStatic);
+            //GameObjectUtility.SetStaticEditorFlags(_floor, StaticEditorFlags.NavigationStatic);
         }
         else
         {
@@ -265,7 +265,6 @@ public class Room : MonoBehaviour
     {
         if (!_playerEntered && other.gameObject.name.Equals("Player"))
         {
-            Debug.Log("Player Entered " + this.name);
             foreach (Enemy enemy in _enemies)
             {
                 enemy.gameObject.SetActive(true);
