@@ -25,6 +25,8 @@ public class SpawnOption : MonoBehaviour
     public int location; // location in room this GameObject will be places. Not x,y coordinates, but tile type.
     public int rotation;
     public int maxPerRoom; // max spawns per room(
+    public int includedBuildBlocks; // how many building blocks are in this prefab
+    public int requiredBuildBlocks; // how many building blocks are required in the room for this prefab to spawn
     public bool includeInTilePool = true;
 }
 

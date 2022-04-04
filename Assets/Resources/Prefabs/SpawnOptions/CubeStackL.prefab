@@ -726,6 +726,8 @@ MonoBehaviour:
   location: 2
   rotation: 0
   maxPerRoom: 100
+  includedBuildBlocks: 3
+  requiredBuildBlocks: 0
   includeInTilePool: 1
 --- !u!1001 &7520118663381894307
 PrefabInstance:

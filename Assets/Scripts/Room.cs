@@ -65,9 +65,14 @@ public class Room : MonoBehaviour
 
     public const int SMALL_GRID_SIZE = 1,  LARGE_GRID_SIZE = 8,  XLARGE_GRID_SIZE = 16;
 
-    public const int EMPTY = -1, TAKEN = -2, FOO = -3;
+    public const int EMPTY = -1, TAKEN = -2, BLOCK_PILE = -3;
 
     private bool _playerEntered = false;
+
+    private static GameObject _buildBlockPrefab;
+
+    private int _buildBlockCount, _requiredBuildBlockCount;
+
 
 
     private void Awake()
@@ -114,8 +119,8 @@ public class Room : MonoBehaviour
                 scale.y * floorTilePrefab.transform.lossyScale.z);
             floorTilePrefab.layer = LayerMask.NameToLayer("Ground");
 
-            float startX = _floor.transform.position.x - size.x / 2 + LARGE_GRID_SIZE / 2;
-            float startZ = _floor.transform.position.z - size.z / 2 + LARGE_GRID_SIZE / 2;
+            float startX = _floor.transform.position.x - size.x / 2f + LARGE_GRID_SIZE / 2f;
+            float startZ = _floor.transform.position.z - size.z / 2f + LARGE_GRID_SIZE / 2f;
 
             _floorTiles = new GameObject[(int)size.x / LARGE_GRID_SIZE, (int)size.z / LARGE_GRID_SIZE];
             for (int i = 0; i < size.x / LARGE_GRID_SIZE; ++i)
@@ -257,6 +262,9 @@ public class Room : MonoBehaviour
         if (_keyPrefab == null)
             _keyPrefab = Resources.Load<GameObject>("Prefabs/Key");
 
+        if (_buildBlockPrefab == null)
+            _buildBlockPrefab = Resources.Load<GameObject>("Prefabs/BuildBlock");
+
         _roomCollider = gameObject.AddComponent<BoxCollider>();
 
     }
@@ -291,6 +299,9 @@ public class Room : MonoBehaviour
             GenerateTileNums(_xLargeSpawnGrid, _largeSpawnGrid, xLargeSpawnOptions, XLARGE_GRID_SIZE / LARGE_GRID_SIZE);
         GenerateTileNums(_largeSpawnGrid, null, largeSpawnOptions, LARGE_GRID_SIZE / SMALL_GRID_SIZE);
         GenerateTileNums(_smallSpawnGrid, null, smallSpawnOptions, 1);
+
+        // this function has the potential to override a taken tile, so it must be exexuted before generating tiles
+        GenerateBuildBlocks();
 
         GenerateTiles(_xLargeSpawnGrid, XLARGE_GRID_SIZE, xLargeSpawnOptions);
         GenerateTiles(_largeSpawnGrid, LARGE_GRID_SIZE, largeSpawnOptions);
@@ -349,7 +360,7 @@ public class Room : MonoBehaviour
 
             GameObject lamp = Instantiate(_lightPrefab);
             GameObject soFloor = lamp.transform.Find("Floor").gameObject;
-            float yPos = _floor.transform.position.y + _floor.transform.lossyScale.y / 2 - soFloor.transform.lossyScale.y / 2;
+            float yPos = _floor.transform.position.y + _floor.transform.lossyScale.y / 2f - soFloor.transform.lossyScale.y / 2f;
             lamp.transform.position = new Vector3(startX + SMALL_GRID_SIZE * randX, yPos, startZ + SMALL_GRID_SIZE * randY);
 
             float rotation = getWallTileRotation(_smallSpawnGrid, randX, randY);
@@ -503,6 +514,94 @@ public class Room : MonoBehaviour
 
         Destroy(wall.GetComponent<MeshRenderer>());
         Destroy(wall.GetComponent<BoxCollider>());
+    }
+    private void GenerateBuildBlocks()
+    {
+        _buildBlockCount = 0;
+        _requiredBuildBlockCount = 0;
+
+        int length = _largeSpawnGrid.GetLength(0);
+        int width = _largeSpawnGrid.GetLength(1);
+
+        // fild empty tiles for putting BuildBlocks
+        List<Vector2Int> emptyTiles = new List<Vector2Int>(length * width / 2);
+        List<Vector2Int> takenTiles = new List<Vector2Int>(length * width / 2);
+
+        for (int i = 0; i < length; ++i)
+        {
+            for (int j = 0; j < width; ++j)
+            {
+                int idx = _largeSpawnGrid[i, j];
+
+                if (_largeSpawnGrid[i, j] == Room.EMPTY)
+                {
+                    emptyTiles.Add(new Vector2Int(i, j));
+                }
+                else if (_largeSpawnGrid[i, j] > 0)
+                {
+                    takenTiles.Add(new Vector2Int(i, j));
+
+                    SpawnOption so = largeSpawnOptions[idx];
+
+                    _buildBlockCount += so.includedBuildBlocks;
+                    _requiredBuildBlockCount = Mathf.Max(_requiredBuildBlockCount, so.requiredBuildBlocks);
+                }
+            }
+        }
+
+        if (_buildBlockCount >= _requiredBuildBlockCount)
+        {
+            // block requirement satisfied
+            return;
+        }
+
+        if(emptyTiles.Count == 0)
+        {
+            // no empty tiles. override one.
+
+            int randX = Random.Range(0, length);
+            int randY = Random.Range(0, width);
+
+            int idx = _largeSpawnGrid[randX, randY];
+
+            if(idx >= 0)
+            {
+                SpawnOption so = largeSpawnOptions[idx];
+
+                _buildBlockCount += so.includedBuildBlocks;
+                _requiredBuildBlockCount = Mathf.Max(_requiredBuildBlockCount, so.requiredBuildBlocks);
+
+                if (_buildBlockCount >= _requiredBuildBlockCount)
+                {
+                    // block requirement satisfied
+                    return;
+                }
+            }
+            
+            emptyTiles.Add(new Vector2Int(randX, randY));
+        }
+
+        Vector2Int location = emptyTiles[Random.Range(0, emptyTiles.Count)];
+        _largeSpawnGrid[location.x, location.y] = Room.BLOCK_PILE;
+
+        float roomStartX = _floor.transform.position.x - _floor.transform.lossyScale.x / 2f + LARGE_GRID_SIZE / 2f;
+        float roomStartZ = _floor.transform.position.z - _floor.transform.lossyScale.z / 2f + LARGE_GRID_SIZE / 2f;
+        float roomStartY = _floor.transform.position.y + _floor.transform.lossyScale.y / 2f;
+        float tileX = roomStartX + LARGE_GRID_SIZE * location.x;
+        float tileZ = roomStartZ + LARGE_GRID_SIZE * location.y;
+        float tileY = roomStartY + _buildBlockPrefab.transform.lossyScale.y / 2f;
+        float blockHeight = _buildBlockPrefab.transform.lossyScale.y;
+
+        for (int i = 0; _buildBlockCount < _requiredBuildBlockCount; ++i)
+        {
+            float randOffsetX = Random.Range(1f, 2f);
+            float randOffsetY = Random.Range(1f, 2f);
+            GameObject buildBlock = Instantiate(_buildBlockPrefab);
+            buildBlock.transform.position = new Vector3(tileX + randOffsetX, tileY + blockHeight * i, tileZ + randOffsetY);
+            buildBlock.transform.SetParent(transform);
+            ++_buildBlockCount;
+        }
+
     }
 
     public void RemoveWall(int side)
@@ -735,14 +834,14 @@ public class Room : MonoBehaviour
 
         List<GameObject> drawnTiles = new List<GameObject>(length * width);
 
-        float startX = _floor.transform.position.x - _floor.transform.localScale.x / 2 + tileSize / 2;
-        float startZ = _floor.transform.position.z - _floor.transform.localScale.z / 2 + tileSize / 2;
+        float startX = _floor.transform.position.x - _floor.transform.localScale.x / 2f + tileSize / 2f;
+        float startZ = _floor.transform.position.z - _floor.transform.localScale.z / 2f + tileSize / 2f;
 
         for (int i = 0; i < length; ++i)
         {
             for (int j = 0; j < width; ++j)
             {
-                if (grid[i, j] == Room.TAKEN || grid[i, j] == Room.EMPTY)
+                if (grid[i, j] < 0)
                     continue;
 
                 SpawnOption soPrefab = spawnOptions[grid[i, j]];
@@ -750,7 +849,7 @@ public class Room : MonoBehaviour
                 SpawnOption so = Instantiate(soPrefab);
 
                 GameObject soFloor = getChild(so, "Floor");
-                float yPos = _floor.transform.position.y + _floor.transform.localScale.y / 2 - soFloor.transform.localScale.y/2;
+                float yPos = _floor.transform.position.y + _floor.transform.localScale.y / 2f - soFloor.transform.localScale.y/2f;
                 so.transform.position = new Vector3(startX + tileSize * i, yPos, startZ + tileSize * j);
 
                 if (soFloor.tag.Equals("Delete"))
@@ -939,8 +1038,8 @@ public class Room : MonoBehaviour
 
         List<GameObject> drawnTiles = new List<GameObject>(length * width);
 
-        float startX = _floor.transform.position.x - _floor.transform.localScale.x / 2 + tileSize / 2;
-        float startZ = _floor.transform.position.z - _floor.transform.localScale.z / 2 + tileSize / 2;
+        float startX = _floor.transform.position.x - _floor.transform.localScale.x / 2f + tileSize / 2f;
+        float startZ = _floor.transform.position.z - _floor.transform.localScale.z / 2f + tileSize / 2f;
 
         //List<GameObject> gridCubes = new List<GameObject>(length * width);
 
