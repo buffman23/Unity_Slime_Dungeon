@@ -31,9 +31,13 @@ public class Door : MonoBehaviour
 
     public UnityEngine.Events.UnityEvent opened;
 
+    private static GameObject _keyPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
+        InitReferences();
+
         _keyholeTrans = transform.Find("KeyholePos");
         _animator = GetComponent<Animator>();
 
@@ -42,6 +46,14 @@ public class Door : MonoBehaviour
         evt.time = 2f;
         evt.functionName = "DoorOpened";
         _animator.runtimeAnimatorController.animationClips[1].AddEvent(evt);
+    }
+
+    private void InitReferences()
+    {
+        if (_keyPrefab == null)
+        {
+            _keyPrefab = Resources.Load<GameObject>("Prefabs/Key");
+        }
     }
 
     private void DoorOpened()
@@ -150,6 +162,7 @@ public class Door : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        /*
         if (_key == null && other.gameObject.name.Equals("Key"))
         {
             _key = other.gameObject;
@@ -170,11 +183,38 @@ public class Door : MonoBehaviour
             {
                 Physics.IgnoreCollision(collider1, collider2);
             }
-            
+           */
 
-           
+        PlayerController pc;
+        if ((pc = other.gameObject.GetComponent<PlayerController>()) == null)
+            return;
 
+        if (pc.hasKey() && _key == null)
+        {
+            pc.setHasKey(false);
+            _key = Instantiate(_keyPrefab);
+            Destroy(_key.GetComponent<Collider>());
+            _keyPrefab.tag = "Untagged";
+            _key.transform.position = pc.transform.position + pc.transform.forward * 1;
+            _key.GetComponent<Key>().canPickup = false;
+            _key.transform.SetParent(null);
 
+            _keyRB = _key.transform.GetComponent<Rigidbody>();
+            _keyRB.useGravity = false;
+
+            _destination = _keyholeTrans.position - _keyholeTrans.forward * .7f;
+            _destinationRotation = _keyholeTrans.rotation * Quaternion.Euler(0f, 0f, 180f);
+
+            Collider collider1 = transform.Find("Armature").GetComponent<Collider>();
+            foreach (Collider collider2 in _key.transform.GetComponents<Collider>())
+            {
+                Physics.IgnoreCollision(collider1, collider2);
+            }
+
+            _insertReady = true;
         }
+
+
+        
     }
 }

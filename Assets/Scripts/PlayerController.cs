@@ -80,11 +80,13 @@ public class PlayerController : MonoBehaviour
 
     private bool _previousGravity;
 
-    private Image _draggableHighlight;
+    private Image _draggableHighlight, _keyImage;
 
     // updated by MapController which tracks players current room
     [HideInInspector]
     public Room currentRoom;
+
+    private bool _hasKey;
 
     public float mass = 3.0f; // defines the character mass
     private Vector3 _impact = Vector3.zero;
@@ -124,6 +126,7 @@ public class PlayerController : MonoBehaviour
         _headTrans = _neckTrans.Find("Head");
 
         _draggableHighlight = GameObject.Find("DraggableHighlight").GetComponent<Image>();
+        _keyImage = GameObject.Find("KeyImage").GetComponent<Image>();
     }
 
     // Update is called once per frame
@@ -379,5 +382,17 @@ public class PlayerController : MonoBehaviour
         dir.Normalize();
         if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
         _impact += dir.normalized * force / mass;
+    }
+
+    public bool hasKey()
+    {
+        return _hasKey;
+    }
+
+    public void setHasKey(bool b)
+    {
+        _hasKey = b;
+        _keyImage.enabled = _hasKey;
+
     }
 }
