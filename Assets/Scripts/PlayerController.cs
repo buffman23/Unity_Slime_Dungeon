@@ -82,6 +82,10 @@ public class PlayerController : MonoBehaviour
 
     private Image _draggableHighlight;
 
+    // updated by MapController which tracks players current room
+    [HideInInspector]
+    public Room currentRoom;
+
     public float mass = 3.0f; // defines the character mass
     private Vector3 _impact = Vector3.zero;
 
