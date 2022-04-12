@@ -30,6 +30,8 @@ public class Door : MonoBehaviour
     private Quaternion _destinationRotation;
 
     public UnityEngine.Events.UnityEvent opened;
+    PlayerController playerController;
+    HealthBarController healthbarController;
 
     private static GameObject _keyPrefab;
 
@@ -40,7 +42,10 @@ public class Door : MonoBehaviour
 
         _keyholeTrans = transform.Find("KeyholePos");
         _animator = GetComponent<Animator>();
-
+        if (playerController == null)
+            playerController = PlayerController.instance;
+        if (healthbarController == null)
+            healthbarController = HealthBarController.instance;
         AnimationEvent evt;
         evt = new AnimationEvent();
         evt.time = 2f;
@@ -59,6 +64,8 @@ public class Door : MonoBehaviour
     private void DoorOpened()
     {
         opened.Invoke();
+
+
     }
 
     // Update is called once per frame
@@ -178,6 +185,7 @@ public class Door : MonoBehaviour
 
             _insertReady = true;
 
+           
             Collider collider1 = transform.Find("Armature").GetComponent<Collider>();
             foreach (Collider collider2 in _key.transform.GetComponents<Collider>())
             {
@@ -212,6 +220,9 @@ public class Door : MonoBehaviour
             }
 
             _insertReady = true;
+
+            playerController.playerHealth = 100;
+            healthbarController.changeHealthBar(100);
         }
 
 

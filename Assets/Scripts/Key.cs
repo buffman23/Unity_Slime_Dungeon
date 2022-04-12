@@ -17,14 +17,14 @@ public class Key : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collider)
     {
         if (!canPickup)
             return;
 
         PlayerController pc;
 
-        if((pc = collision.gameObject.GetComponent<PlayerController>()) == null)
+        if((pc = collider.gameObject.GetComponent<PlayerController>()) == null)
         {
             return;
         }

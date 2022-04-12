@@ -14,7 +14,7 @@ using UnityEngine.AI;
 public class MapController : MonoBehaviour
 {
     public static MapController instance;
-
+    public Room room;
     private Room _roomPrefab;
     private Hallway _hallwayPrefab;
 
@@ -84,7 +84,7 @@ public class MapController : MonoBehaviour
             _roomPrefab.size = new Vector3(wall2dDim.x, _roomHeight, wall2dDim.y);
             
 
-            Room room = Instantiate(_roomPrefab, roomPosition, Quaternion.identity);
+            room = Instantiate(_roomPrefab, roomPosition, Quaternion.identity);
             //room.ga
             room.transform.SetParent(map.transform);
             room.name = "Room_" + i;
@@ -156,7 +156,7 @@ public class MapController : MonoBehaviour
         }
         for(int i = startIdx; i < _rooms.Count; ++i)
         {
-            Room room = _rooms[i];
+            room = _rooms[i];
             room.GenerateTiles();
             room.gameObject.SetActive(false);
 
