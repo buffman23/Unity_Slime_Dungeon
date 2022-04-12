@@ -410,14 +410,27 @@ public class PlayerController : MonoBehaviour
                 // back to main menu
                 SceneManager.LoadScene("Main_menu_scene");
             }
-            // send player back to start of room
+            // send player back to previous room
             else
             {
                 livesCountController.decrementNumOfLives(--numOfLives);
                 playerHealth = 100;
                 healthBarController.changeHealthBar(playerHealth);
-            //Vector3 respawnPosition = _respawnTrans.position + new Vector3(0f, 0f, 0f);
-            transform.position = ((Vector3Int)mapController.room.previousRoom.gridPosition);
+            // in the first room
+            if (currentRoom.previousRoom == null)
+            {
+                bool wasEnabled = _characterController.enabled;
+                _characterController.enabled = false;
+                transform.position = currentRoom.transform.position;
+                _characterController.enabled = wasEnabled;
+            }
+            else
+            {
+                bool wasEnabled = _characterController.enabled;
+                _characterController.enabled = false;
+                transform.position = currentRoom.previousRoom.transform.position;
+                _characterController.enabled = wasEnabled;
+            }
             }
     }
     public static (bool, RaycastHit) getLookRay()
