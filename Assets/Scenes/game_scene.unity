@@ -855,8 +855,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraHeadOffset: 0.12
   dragDistance: 3
-  livesCountController: {fileID: 0}
-  mapController: {fileID: 0}
   dragForce: 4.5
   walkSpeed: 4
   runSpeed: 7
@@ -1839,6 +1837,7 @@ GameObject:
   - component: {fileID: 1872449432}
   - component: {fileID: 1872449434}
   - component: {fileID: 1872449433}
+  - component: {fileID: 1872449435}
   m_Layer: 5
   m_Name: LivesCountUI
   m_TagString: Untagged
@@ -1905,6 +1904,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1872449431}
   m_CullTransparentMesh: 1
+--- !u!114 &1872449435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872449431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 791af2f3e4320f64a8a6b2e306d49e97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1912247688
 GameObject:
   m_ObjectHideFlags: 0

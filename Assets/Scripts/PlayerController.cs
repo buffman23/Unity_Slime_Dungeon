@@ -20,13 +20,9 @@ public class PlayerController : MonoBehaviour
     public static float headRaycastOffset;
     public float dragDistance;
 
-    public LivesCountController livesCountController;
-
     private Transform _respawnTrans;
 
     public static PlayerController instance;
-
-    public MapController mapController;
 
     public float dragForce;
 
@@ -141,10 +137,6 @@ public class PlayerController : MonoBehaviour
         _chestTrans = transform.Find("PlayerRig/Armature/Hips/Spine/Chest").transform;
         _headTrans = _neckTrans.Find("Head");
         _respawnTrans = transform.Find("Respawn");
-        if (mapController == null)
-            mapController = MapController.instance;
-        if (livesCountController == null)
-            livesCountController = LivesCountController.instance;
         _draggableHighlight = GameObject.Find("DraggableHighlight").GetComponent<Image>();
         _keyImage = GameObject.Find("KeyImage").GetComponent<Image>();
     }
@@ -413,7 +405,7 @@ public class PlayerController : MonoBehaviour
             // send player back to previous room
             else
             {
-                livesCountController.decrementNumOfLives(--numOfLives);
+                LivesCountController.instance.decrementNumOfLives(--numOfLives);
                 playerHealth = 100;
                 HealthBarController.instance.changeHealthBar(playerHealth);
             // in the first room
