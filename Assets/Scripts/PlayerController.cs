@@ -98,6 +98,10 @@ public class PlayerController : MonoBehaviour
 
     private int numOfLives = 3;
 
+    // updated by MapController which tracks players current room
+    [HideInInspector]
+    public Room currentRoom;
+
     public float mass = 3.0f; // defines the character mass
     private Vector3 _impact = Vector3.zero;
 

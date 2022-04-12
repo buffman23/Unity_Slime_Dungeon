@@ -335,6 +335,9 @@ public class MapController : MonoBehaviour
         if (room != null) {
             if (room != _activeRooms[2])
             {
+                // update players current room reference
+                PlayerController.instance.currentRoom = room;
+
                 Room[] newActiveRooms = new Room[5];
 
                 if (room.previousRoom != null)
