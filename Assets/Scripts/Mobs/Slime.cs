@@ -10,6 +10,7 @@ public class Slime : Enemy
     private float _stuckTime = 0f;
     private static float _jumpCooldownMaxTime = 2f;
     private static float _maxStuckTime = 6f;
+    private int health = 100;
     private int damage = 10;
 
     private Rigidbody _rigidBody;
@@ -143,6 +144,15 @@ public class Slime : Enemy
         _rigidBody.isKinematic = true;
         StartCoroutine(ParticleDeath());
 
+    }
+
+    public void damageSlime(int damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Kill(true);
+        }
     }
 
     private void OnTriggerEnter(Collider other)

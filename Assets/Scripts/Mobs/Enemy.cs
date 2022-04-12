@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour
             _playerController = PlayerController.instance;
     }
 
+
     public virtual void Kill()
     {
         this.Kill(true);
