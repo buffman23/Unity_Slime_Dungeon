@@ -74,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -5492146066450460074, guid: 104b3ab1f3df03043a483cc3229ab349, type: 3}
       propertyPath: probability
-      value: 0.005
+      value: 0.001
       objectReference: {fileID: 0}
     - target: {fileID: -5492146066450460074, guid: 104b3ab1f3df03043a483cc3229ab349, type: 3}
       propertyPath: includeInTilePool
