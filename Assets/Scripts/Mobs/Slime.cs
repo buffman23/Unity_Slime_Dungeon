@@ -29,6 +29,10 @@ public class Slime : Enemy
 
     private LinkedList<GameObject> _floorTriggers = new LinkedList<GameObject>();
 
+    private bool _lastIsGrounded;
+
+    private float _maxGroundedCooldown = .5f, _groundedCooldown = 0f;
+
     // Start is called before the first frame update
     protected override void Start() 
     {
@@ -112,7 +116,26 @@ public class Slime : Enemy
             }
         }
 
+
+
         _isGrounded = IsGrounded();
+
+        if(_isGrounded && !_lastIsGrounded && _groundedCooldown >= _maxGroundedCooldown)
+        {
+            _groundedCooldown = 0f;
+            //Debug.Log("Landed");
+        }
+
+        if (!_isGrounded && _lastIsGrounded && _groundedCooldown >= _maxGroundedCooldown)
+        {
+            _groundedCooldown = 0f;
+            //Debug.Log("Jumped");
+        }
+
+        _groundedCooldown += Time.deltaTime;
+
+        _lastIsGrounded = _isGrounded;
+
         _animator.SetBool("OnGround", _isGrounded);
     }
 
