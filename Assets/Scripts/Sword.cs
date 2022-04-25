@@ -5,6 +5,7 @@ using UnityEngine;
 public class Sword : MonoBehaviour
 {
     public bool swinging;
+    private int damage = 34;
 
     private BoxCollider _bladeCollider;
     // Start is called before the first frame update
@@ -25,12 +26,12 @@ public class Sword : MonoBehaviour
         if (go == null)
             return;
 
-        Enemy enemy = go.transform.GetComponentInChildren<Enemy>();
+        Slime enemy = go.transform.GetComponentInChildren<Slime>();
 
         
         if (enemy != null)
         {
-            enemy.Kill();
+            enemy.damageSlime(damage);
         }
         else
         {
@@ -39,10 +40,10 @@ public class Sword : MonoBehaviour
             if (parentTrans == null)
                 return;
 
-            enemy = go.transform.parent.GetComponent<Enemy>();
+            enemy = go.transform.parent.GetComponent<Slime>();
             if (enemy != null && swinging)
             {
-                enemy.Kill();
+                enemy.damageSlime(damage);
             }
         }
     }

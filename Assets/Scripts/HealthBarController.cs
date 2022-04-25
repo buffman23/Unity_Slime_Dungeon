@@ -9,7 +9,6 @@ using UnityEngine.SceneManagement;
 public class HealthBarController : MonoBehaviour
 {
     Image healthBar;
-    int health = 100;
     int maxHealth = 100;
     public static HealthBarController instance;
 
@@ -32,7 +31,7 @@ public class HealthBarController : MonoBehaviour
         
     }
 
-    public void changeHealthBar(float newHealth)
+    public void changeHealthBar(int newHealth)
     {
         // need to get current health
 
