@@ -20,6 +20,10 @@ public class Enemy : MonoBehaviour
         InitReferences();
     }
 
+    protected virtual void Update()
+    {
+    }
+
     private void InitReferences()
     {
         if (_playerController == null)

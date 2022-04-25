@@ -11,12 +11,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class PlayerController : MonoBehaviour
 {
     public float cameraHeadOffset;
     public static float headRaycastOffset;
     public float dragDistance;
+
+    private Transform _respawnTrans;
 
     public static PlayerController instance;
 
@@ -80,7 +84,20 @@ public class PlayerController : MonoBehaviour
 
     private bool _previousGravity;
 
-    private Image _draggableHighlight;
+    private Image _draggableHighlight, _keyImage;
+
+    // updated by MapController which tracks players current room
+    [HideInInspector]
+    public Room currentRoom;
+
+    private bool _hasKey;
+
+    private Hashtable potentialHitSources = new Hashtable();
+
+    public int playerHealth = 100;
+
+    private int numOfLives = 3;
+
 
     public float mass = 3.0f; // defines the character mass
     private Vector3 _impact = Vector3.zero;
@@ -89,7 +106,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         InitReferences();
-
+        potentialHitSources.Add("Slime", "10");
+        potentialHitSources.Add("BombSlime", "50");
         Cursor.lockState = CursorLockMode.Locked;
         _characterController.enabled = true;
 
@@ -118,8 +136,9 @@ public class PlayerController : MonoBehaviour
         _neckTrans = transform.Find("PlayerRig/Armature/Hips/Spine/Chest/UpperChest/Neck").transform;
         _chestTrans = transform.Find("PlayerRig/Armature/Hips/Spine/Chest").transform;
         _headTrans = _neckTrans.Find("Head");
-
+        _respawnTrans = transform.Find("Respawn");
         _draggableHighlight = GameObject.Find("DraggableHighlight").GetComponent<Image>();
+        _keyImage = GameObject.Find("KeyImage").GetComponent<Image>();
     }
 
     // Update is called once per frame
@@ -349,16 +368,62 @@ public class PlayerController : MonoBehaviour
         Camera.main.transform.position = _headTrans.position + _headTrans.up * cameraHeadOffset;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collider)
     {
         Rigidbody rb;
-        Debug.Log("collison:" + collision.gameObject.name);
-        if ((rb = collision.gameObject.GetComponent<Rigidbody>()) != null)
+        Enemy enemy = collider.gameObject.GetComponent<Enemy>();
+        if (enemy == null)
+        {
+            if (collider.transform.parent == null)
+                return;
+            enemy = collider.transform.parent.GetComponent<Enemy>();
+            if (enemy == null)
+                return;
+        }
+        //Debug.Log("collison:" + collider.gameObject.name);
+        if ((rb = collider.gameObject.GetComponent<Rigidbody>()) != null)
         {
             Vector3 playerPush = _playerTrans.transform.forward * _prevSpeed;
             rb.AddForce(playerPush);
             Debug.Log("push");
         }
+        // need to get the damage of the enemy that hits the player
+        // check who made the collision
+        
+
+       
+    }
+    // checks if the players health goes below 0
+    public void isOutOfHealth()
+    {
+        // two cases: player is out of lives and player must go back to beginning; player has more lives, decrease num of lives, go back to beginning state of room
+            if (numOfLives - 1 == 0)
+            {
+                // back to main menu
+                SceneManager.LoadScene("Main_menu_scene");
+            }
+            // send player back to previous room
+            else
+            {
+                LivesCountController.instance.decrementNumOfLives(--numOfLives);
+                playerHealth = 100;
+                HealthBarController.instance.changeHealthBar(playerHealth);
+            // in the first room
+            if (currentRoom.previousRoom == null)
+            {
+                bool wasEnabled = _characterController.enabled;
+                _characterController.enabled = false;
+                transform.position = currentRoom.transform.position;
+                _characterController.enabled = wasEnabled;
+            }
+            else
+            {
+                bool wasEnabled = _characterController.enabled;
+                _characterController.enabled = false;
+                transform.position = currentRoom.previousRoom.transform.position;
+                _characterController.enabled = wasEnabled;
+            }
+            }
     }
     public static (bool, RaycastHit) getLookRay()
     {
@@ -375,5 +440,27 @@ public class PlayerController : MonoBehaviour
         dir.Normalize();
         if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
         _impact += dir.normalized * force / mass;
+    }
+
+
+    public void damage(int hitDamage)
+    {
+        playerHealth -= hitDamage;
+        Debug.Log(playerHealth);
+        if (playerHealth <= 0)
+            isOutOfHealth();
+        HealthBarController.instance.changeHealthBar(playerHealth);
+    }
+
+    public bool hasKey()
+    {
+        return _hasKey;
+    }
+
+    public void setHasKey(bool b)
+    {
+        _hasKey = b;
+        _keyImage.enabled = _hasKey;
+
     }
 }

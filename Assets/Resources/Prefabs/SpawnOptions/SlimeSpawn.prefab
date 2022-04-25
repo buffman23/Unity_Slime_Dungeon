@@ -145,6 +145,8 @@ MonoBehaviour:
   location: 0
   rotation: 2
   maxPerRoom: 100
+  includedBuildBlocks: 0
+  requiredBuildBlocks: 0
   includeInTilePool: 1
 --- !u!114 &-2018320858059274905
 MonoBehaviour:

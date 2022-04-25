@@ -5,10 +5,12 @@ using UnityEngine.AI;
 
 public class Slime : Enemy
 {
-    private float _jumpCooldownTime = 0f;
+    protected float _jumpCooldownTime = 0f;
+    private float _damageCoolDownTime = 0f;
     private float _stuckTime = 0f;
-    private static float _jumpCooldownMaxTime = 2f;
-    private static float _maxStuckTime = 6f;
+    protected float _jumpCooldownMaxTime = 2f;
+    private static float _maxStuckTime = 3f;
+    private int damage = 10;
 
     private Rigidbody _rigidBody;
 
@@ -54,12 +56,14 @@ public class Slime : Enemy
     //    base.Update();
     //}
 
-    private void Update()
+    protected override void Update()
     {
         if (_dead)
             return;
 
         _stuckTime += Time.deltaTime;
+
+        _damageCoolDownTime += Time.deltaTime;
 
         if (_isGrounded || _stuckTime >= _maxStuckTime)
         {
@@ -144,12 +148,20 @@ public class Slime : Enemy
     private void OnTriggerEnter(Collider other)
     {
         _floorTriggers.AddFirst(other.gameObject);
+        PlayerController player = other.gameObject.GetComponent<PlayerController>();
+        if (player != null && _damageCoolDownTime >= 1)
+        {
+            player.damage(damage);
+            _damageCoolDownTime = 0;
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         _floorTriggers.Remove(other.gameObject);
     }
+
+
 
     IEnumerator ParticleDeath()
     {
