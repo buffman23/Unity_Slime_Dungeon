@@ -537,7 +537,7 @@ public class Room : MonoBehaviour
                 {
                     emptyTiles.Add(new Vector2Int(i, j));
                 }
-                else if (_largeSpawnGrid[i, j] > 0)
+                else if (_largeSpawnGrid[i, j] >= 0)
                 {
                     takenTiles.Add(new Vector2Int(i, j));
 

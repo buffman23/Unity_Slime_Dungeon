@@ -5,6 +5,7 @@ using UnityEngine;
 public class HoleTrap : MonoBehaviour
 {
     private BoxCollider _collisionBox;
+    private PlayerController playerController;
     private Transform _respawnTrans;
 
     // Start is called before the first frame update
@@ -19,6 +20,8 @@ public class HoleTrap : MonoBehaviour
     {
         _collisionBox = GetComponent<BoxCollider>();
         _respawnTrans = transform.Find("Respawn");
+        if (playerController == null)
+            playerController = PlayerController.instance;
     }
 
     // Update is called once per frame
@@ -32,7 +35,7 @@ public class HoleTrap : MonoBehaviour
         
         GameObject go = collider.gameObject;
         Debug.Log("Trigger entered: " + go.name);
-
+        playerController.damage(40);
         Vector3 respawnPosition = _respawnTrans.position + new Vector3(0f, go.transform.lossyScale.y / 2f, 0f);
 
         CharacterController cc = go.GetComponent<CharacterController>();
