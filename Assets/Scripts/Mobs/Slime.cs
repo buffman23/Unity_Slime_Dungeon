@@ -163,6 +163,7 @@ public class Slime : Enemy
         {
             player.damage(damage);
             _damageCoolDownTime = 0;
+
         }
     }
 
@@ -181,4 +182,6 @@ public class Slime : Enemy
 
         base.Kill(true);
     }
+
+
 }
