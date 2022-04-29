@@ -446,7 +446,7 @@ public class PlayerController : MonoBehaviour
     public void damage(int hitDamage)
     {
         playerHealth -= hitDamage;
-        Debug.Log(playerHealth);
+
         if (playerHealth <= 0)
             isOutOfHealth();
         HealthBarController.instance.changeHealthBar(playerHealth);

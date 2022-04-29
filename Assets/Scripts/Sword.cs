@@ -41,9 +41,13 @@ public class Sword : MonoBehaviour
                 return;
 
             enemy = go.transform.parent.GetComponent<Slime>();
+            Rigidbody rb;
+            rb = enemy.gameObject.GetComponent<Rigidbody>();
             if (enemy != null && swinging)
             {
                 enemy.damageSlime(damage);
+                rb.AddForce(enemy.gameObject.transform.up * 5f, ForceMode.VelocityChange);
+                rb.AddForce(PlayerController.instance.transform.forward * 5f, ForceMode.VelocityChange);
             }
         }
     }
