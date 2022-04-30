@@ -251,8 +251,10 @@ public class PlayerController : MonoBehaviour
         // apply the _impact force:
         //if (_impact.magnitude > 0.2) _characterController.Move(_impact * Time.deltaTime);
         // consumes the _impact energy each cycle:
-
-        _impact = Vector3.Lerp(_impact, Vector3.zero, Time.deltaTime);
+        if (_isGrounded)
+            _impact = Vector3.Lerp(_impact, Vector3.zero, Time.deltaTime * 4);
+        else
+            _impact = Vector3.Lerp(_impact, Vector3.zero, Time.deltaTime);
     }
 
     private void FixedUpdate()
@@ -440,6 +442,7 @@ public class PlayerController : MonoBehaviour
         dir.Normalize();
         if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
         _impact += dir.normalized * force / mass;
+        
     }
 
 
