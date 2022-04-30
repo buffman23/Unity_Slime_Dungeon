@@ -35,7 +35,8 @@ public class HoleTrap : MonoBehaviour
         
         GameObject go = collider.gameObject;
         Debug.Log("Trigger entered: " + go.name);
-        playerController.damage(40);
+        if (go.gameObject.name == "Player")
+            playerController.damage(40);
         Vector3 respawnPosition = _respawnTrans.position + new Vector3(0f, go.transform.lossyScale.y / 2f, 0f);
 
         CharacterController cc = go.GetComponent<CharacterController>();

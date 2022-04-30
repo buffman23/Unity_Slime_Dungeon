@@ -182,10 +182,13 @@ public class Slime : Enemy
     {
         _floorTriggers.AddFirst(other.gameObject);
         PlayerController player = other.gameObject.GetComponent<PlayerController>();
+        
         if (player != null && _damageCoolDownTime >= 1)
         {
             player.damage(damage);
             _damageCoolDownTime = 0;
+            PlayerController.instance.AddImpact(other.gameObject.transform.up * 5f, 250f);
+            PlayerController.instance.AddImpact(gameObject.transform.forward * 5f, 250f);
 
         }
     }
