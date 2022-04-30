@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
         }
 
         difficulty = 1;
-        playerColor = Color.black;
+        playerColor = Color.white;
     }
     // Start is called before the first frame update
     void Start()
