@@ -184,7 +184,7 @@ public class Slime : Enemy
         PlayerController player = other.gameObject.GetComponent<PlayerController>();
         if (player != null && _damageCoolDownTime >= 1)
         {
-            player.damage(damage);
+            player.damage((int)(damage * GameController.instance.difficulty));
             _damageCoolDownTime = 0;
 
         }

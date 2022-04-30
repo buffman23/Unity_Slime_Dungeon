@@ -31,6 +31,7 @@ public class CharCreateController : MonoBehaviour
         {
             _SMR.material.color = Color.HSVToRGB(newValue, .5f, .5f);
         }
+        GameController.instance.playerColor = _SMR.material.color;
     }
 
     // Update is called once per frame
