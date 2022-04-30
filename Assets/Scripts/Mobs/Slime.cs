@@ -185,7 +185,7 @@ public class Slime : Enemy
         
         if (player != null && _damageCoolDownTime >= 1)
         {
-            player.damage(damage);
+            player.damage((int)(damage * GameController.instance.difficulty));
             _damageCoolDownTime = 0;
             PlayerController.instance.AddImpact(other.gameObject.transform.up * 5f, 250f);
             PlayerController.instance.AddImpact(gameObject.transform.forward * 5f, 250f);

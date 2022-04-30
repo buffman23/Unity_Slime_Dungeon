@@ -17,8 +17,9 @@ public class MainMenu : MonoBehaviour
 
 
     // used in Create Character Scene
-    public void PlayGame()
+    public void PlayGame(float difficulty)
     {
+        GameController.instance.difficulty = difficulty;
         SceneManager.LoadScene(1);
     }
 

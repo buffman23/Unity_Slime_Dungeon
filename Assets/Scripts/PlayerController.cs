@@ -125,6 +125,9 @@ public class PlayerController : MonoBehaviour
         {
             Destroy(this);
         }
+
+        GameObject.Find("PlayerCube").GetComponent<SkinnedMeshRenderer>().material.color = GameController.instance.playerColor;
+
     }
 
     private void InitReferences()
