@@ -139,7 +139,7 @@ public class Slime : Enemy
         _animator.SetBool("OnGround", _isGrounded);
     }
 
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         Vector3 corner = transform.position - transform.lossyScale / 2f;
         float length = transform.lossyScale.x;

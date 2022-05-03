@@ -210,7 +210,18 @@ public class PlayerController : MonoBehaviour
 
         _characterController.Move(moveSpeed * Time.deltaTime * move);
 
-
+        // Player cheat keys for demo
+        if(Input.GetKeyDown(KeyCode.N))
+        {
+            // next room
+            _characterController.enabled = false;
+            transform.position = currentRoom.nextRoom.transform.position;
+            _characterController.enabled = true;
+        } else if (Input.GetKeyDown(KeyCode.K))
+        {
+            // kill slimes
+            removeEnemies(currentRoom.transform);
+        }
 
         if (fly)
         {
@@ -468,5 +479,23 @@ public class PlayerController : MonoBehaviour
         _hasKey = b;
         _keyImage.enabled = _hasKey;
 
+    }
+
+    private void removeEnemies(Transform trans)
+    {
+        Enemy enemy;
+        if ((enemy = trans.GetComponent<Enemy>()) != null)
+        {
+            Destroy(trans.gameObject);
+        }
+        else
+        {
+            foreach (Transform child in trans)
+            {
+                removeEnemies(child);
+            }
+        }
+
+        
     }
 }

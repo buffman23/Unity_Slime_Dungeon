@@ -5,7 +5,7 @@ using UnityEngine;
 public class Sword : MonoBehaviour
 {
     public bool swinging;
-    private int damage = 34;
+    private int damage = 50;
 
     private BoxCollider _bladeCollider;
     // Start is called before the first frame update
@@ -48,11 +48,19 @@ public class Sword : MonoBehaviour
 
             if (enemy != null && swinging)
             {
+                float multiplier = 1;
+                Slime slime;
+                if((slime = GetComponent<Slime>()) != null)
+                {
+                    if (!slime.IsGrounded())
+                        multiplier = .1f;
+                }
+
                 Rigidbody rb;
                 rb = enemy.gameObject.GetComponent<Rigidbody>();
                 enemy.damageSlime(damage);
-                rb.AddForce(enemy.gameObject.transform.up * 5f, ForceMode.VelocityChange);
-                rb.AddForce(PlayerController.instance.transform.forward * 5f, ForceMode.VelocityChange);
+                rb.AddForce(enemy.gameObject.transform.up * 2.5f, ForceMode.VelocityChange);
+                rb.AddForce(PlayerController.instance.transform.forward * 2.5f, ForceMode.VelocityChange);
             }
         }
     }
