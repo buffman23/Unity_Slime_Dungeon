@@ -11,6 +11,7 @@ TagManager:
   - Delete
   - Key
   - PassThru
+  - GameMusic
   layers:
   - Default
   - TransparentFX
