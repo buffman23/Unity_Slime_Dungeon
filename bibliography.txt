@@ -14,6 +14,10 @@ YoutTube Tutorials:
   - How to Nav Mesh: https://www.youtube.com/watch?v=FkLJ45Pt-mY
   - How to particle effects: https://www.youtube.com/watch?v=FEA1wTMJAR0
 
+Audio:
+ - Dungeon Music: by Fantasy Musica @ https://opengameart.org/content/dungeon-04
+ - Key and slime sound effects: by artisticdude @ https://opengameart.org/content/rpg-sound-pack
+
 Animations:
  - https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271
  
