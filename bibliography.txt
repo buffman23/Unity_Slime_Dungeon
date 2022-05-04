@@ -19,8 +19,10 @@ Audio:
  - Key and slime sound effects: by artisticdude @ https://opengameart.org/content/rpg-sound-pack
 
 Animations:
- - https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271
+ - Movement animations: https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271
  
+MainMenu Title:
+ - Font generated @ https://www.picturetopeople.org/
 
 Other:
  - Adobe Substance 3D painter used for texturing door, key, and sword
