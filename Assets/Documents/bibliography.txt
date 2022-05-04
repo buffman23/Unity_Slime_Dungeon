@@ -1,0 +1,30 @@
+YoutTube Tutorials:
+  - colloider and trigger tutorial: https://www.youtube.com/watch?v=6C4KfuW2q8Y
+  - basic materials tutorial: https://www.youtube.com/watch?v=V72pMtqMgFk
+  - 3D tilemap tutorial: https://www.youtube.com/watch?v=ulFc6p3hQzQ
+  - player movement: https://www.youtube.com/watch?v=_QajrabyTJc&t=848s
+  - blender rigging tutorial: https://www.youtube.com/watch?v=XkiWBSSuxLw
+  - animator setup: https://www.youtube.com/watch?v=vApG8aYD5aI
+  - animtation layers and masks: https://www.youtube.com/watch?v=-SAnr8-Xfgg
+  - Adobe Substance 3D Painter export: https://www.youtube.com/watch?v=_4ULQ95njmQ
+  - Adobe Substance 3D Painter masking: https://www.youtube.com/watch?v=_j27AS0VQOw
+  - Adobe Substance 3D Painter intro: https://www.youtube.com/watch?v=mv6pg1O9vEQ&t
+  - How to make UV map Blender: https://www.youtube.com/watch?v=AnRQhH3fEDY
+  - How to attach weapon to player hand: https://www.youtube.com/watch?v=S_USClc_r5c
+  - How to Nav Mesh: https://www.youtube.com/watch?v=FkLJ45Pt-mY
+  - How to particle effects: https://www.youtube.com/watch?v=FEA1wTMJAR0
+
+Audio:
+ - Dungeon Music: by Fantasy Musica @ https://opengameart.org/content/dungeon-04
+ - Key and slime sound effects: by artisticdude @ https://opengameart.org/content/rpg-sound-pack
+
+Animations:
+ - Movement animations: https://assetstore.unity.com/packages/3d/animations/basic-motions-free-154271
+ 
+MainMenu Title:
+ - Font generated @ https://www.picturetopeople.org/
+
+Other:
+ - Adobe Substance 3D painter used for texturing door, key, and sword
+
+
