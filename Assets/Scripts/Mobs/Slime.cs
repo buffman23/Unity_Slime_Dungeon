@@ -12,6 +12,8 @@ public class Slime : Enemy
     private static float _maxStuckTime = 3f;
     private int damage = 10;
     private int health = 100;
+    private AudioClip[] _clips;
+    private AudioSource _AS;
 
     private Rigidbody _rigidBody;
 
@@ -53,6 +55,8 @@ public class Slime : Enemy
         _particles = transform.Find("Particle System").GetComponent<ParticleSystem>();
         _body = transform.Find("Body").gameObject;
         _animator = GetComponent<Animator>();
+        _clips = Resources.LoadAll<AudioClip>("Sounds/Slime");
+        _AS = gameObject.AddComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -123,12 +127,16 @@ public class Slime : Enemy
         if(_isGrounded && !_lastIsGrounded && _groundedCooldown >= _maxGroundedCooldown)
         {
             _groundedCooldown = 0f;
+            _AS.clip = GetMoveSound();
+            _AS.Play();
             //Debug.Log("Landed");
         }
 
         if (!_isGrounded && _lastIsGrounded && _groundedCooldown >= _maxGroundedCooldown)
         {
             _groundedCooldown = 0f;
+            _AS.clip = GetMoveSound();
+            _AS.Play();
             //Debug.Log("Jumped");
         }
 
@@ -137,6 +145,18 @@ public class Slime : Enemy
         _lastIsGrounded = _isGrounded;
 
         _animator.SetBool("OnGround", _isGrounded);
+    }
+
+    private AudioClip GetMoveSound()
+    {
+        int randIdx = Random.Range(0, _clips.Length / 2);
+        return _clips[randIdx];
+    }
+
+    private AudioClip GetDamageSound()
+    {
+        int randIdx = Random.Range(_clips.Length / 2, _clips.Length);
+        return _clips[randIdx];
     }
 
     public bool IsGrounded()
@@ -172,6 +192,8 @@ public class Slime : Enemy
     public void damageSlime(int damage)
     {
         health -= damage;
+        _AS.clip = GetDamageSound();
+        _AS.Play();
         if (health <= 0)
         {
             Kill(true);
