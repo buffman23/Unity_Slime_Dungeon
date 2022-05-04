@@ -1368,7 +1368,7 @@ MonoBehaviour:
   room: {fileID: 0}
   spawnPoint: {x: 0, y: 0}
   doorwayDimensions: {x: 3, y: 4}
-  spawnRoom: 0
+  spawnRoom: 1
   surface: {fileID: 0}
 --- !u!4 &913364436
 Transform:
